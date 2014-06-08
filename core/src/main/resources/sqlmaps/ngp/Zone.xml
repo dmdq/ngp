@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZoneSQL">
+    
+    <typeAlias alias="Zone" type="com.ngnsoft.ngp.model.Zone"/>
+    <typeAlias alias="EngineNode" type="com.ngnsoft.ngp.model.EngineNode"/>
+    <typeAlias alias="App" type="com.ngnsoft.ngp.model.App"/>
+    
+    <resultMap id="rm_Zone" class="Zone">  
+        <result property="id"/>
+        <result property="name"/>
+        <result property="recommend"/>
+        <result property="favEngineId" column="fav_engine_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    
+    <resultMap id="rm_app_base" class="App">  
+        <result property="id"/>
+        <result property="name"/>
+        <result property="baseId" column="base_id"/>
+        <result property="baseName" column="base_name"/>
+        <result property="url"/>
+        <result property="iconUrn" column="icon_urn"/>
+        <result property="status"/>
+        <result property="statusDesc" column="status_desc"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <resultMap id="rm_engine_base" class="EngineNode">  
+    	<result property="id"/>
+        <result property="name"/>
+        <result property="load" column="rated"/>
+        <result property="loading"/>
+        <result property="host"/>
+        <result property="status"/>
+        <result property="statusDesc" column="status_desc"/>
+        <result property="statusLock" column="status_lock"/>
+        <result property="touchTime" column="touch_time"/>
+    </resultMap>
+    
+    <resultMap id="rm_zone_with_engine" class="Zone" extends="rm_Zone" >
+        <result property="engineNodes" column="id" select="find_engine_by_zone"/>
+    </resultMap>
+    
+    <resultMap id="rm_zone_with_app" class="Zone" extends="rm_Zone" >
+        <result property="apps" column="id" select="find_app_by_zone"/>
+    </resultMap>
+    
+    <sql id="whereConditionZone">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="name" prepend="AND">
+		<![CDATA[
+                    name = #name#
+		]]>
+            </isNotNull>
+            <isNotNull property="favEngineId" prepend="AND">
+		<![CDATA[
+                    fav_engine_id = #favEngineId#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="find_app_by_zone" resultMap="rm_app_base">
+        <![CDATA[
+            SELECT a.* FROM app a, app_zone ae WHERE a.id = ae.zone_id and zone_id = #value#
+        ]]>
+    </select>
+    
+    <select id="find_apps_by_zone" resultClass="map" resultMap="rm_app_base">
+        <![CDATA[
+            SELECT a.* FROM app a, app_zone ae WHERE a.id = ae.app_id
+        ]]>
+        <dynamic>
+        	<isNotNull property="zoneId" prepend="AND">
+        		zone_id = #zoneId# GROUP BY a.id
+        	</isNotNull>
+        </dynamic>
+    </select>
+    
+    <select id="find_zone_in_app_zone" parameterClass="com.ngnsoft.ngp.model.AppZone" resultMap="rm_zone_with_app">
+        <![CDATA[
+            SELECT e.* FROM zone e , app_zone az where e.id = az.zone_id
+        ]]>
+        <isNotNull property="zoneId" prepend="AND">
+	        	az.zone_id = #zoneId#
+        </isNotNull>
+        GROUP BY e.id
+    </select>
+    
+    <insert id="saveZone" parameterClass="Zone">
+        <![CDATA[
+            INSERT INTO $tableName$ (name, recommend, fav_engine_id, create_time, update_time) 
+            VALUES (#name#, #recommend#, #favEngineId#, #createTime#, #updateTime#)
+        ]]>
+        <selectKey resultClass="java.lang.Long" keyProperty="id" type="post">
+            select last_insert_id();
+        </selectKey>
+    </insert>
+    
+    <update id="updateZone" parameterClass="Zone">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="name" prepend=",">
+		<![CDATA[
+                    name = #name#
+		]]>
+            </isNotNull>
+            <isNotNull property="recommend" prepend=",">
+		<![CDATA[
+                    recommend = #recommend#
+		]]>
+            </isNotNull>
+            <isNotNull property="favEngineId" prepend=",">
+		<![CDATA[
+                    fav_engine_id = #favEngineId#
+		]]>
+            </isNotNull>
+            <isNull property="favEngineId" prepend=",">
+            	fav_engine_id = null
+            </isNull>
+             <isNotNull property="updateTime" prepend=",">
+		<![CDATA[
+                    update_time = #updateTime#
+		]]>
+            </isNotNull>
+		</dynamic>
+		where id = #id#
+    </update>
+    
+    
+    <select id="findZone" parameterClass="Zone" resultMap="rm_zone_with_engine">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionZone"/>
+    </select>
+    
+    <select id="find_zone_by_zoneId" parameterClass="Zone" resultMap="rm_zone_with_engine">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionZone"/>
+        group by id
+    </select>
+    
+    <select id="find_zone_by_appId_or_baseId" parameterClass="map" resultMap="rm_zone_with_engine">
+    	<![CDATA[
+            SELECT * FROM zone as b
+            where b.id in
+            		(select c.zone_id from app_zone c where
+            		  (app_id = #appId# and is_baid = 0) or
+            		  (app_id = #baseId# and is_baid = 1))
+        ]]>
+    </select>
+    
+    <select id="find_engine_by_zone" parameterClass="long" resultMap="rm_engine_base">
+    	<![CDATA[
+            SELECT a.* from engine a, zone_engine e where a.id = e.engine_id and e.zone_id = #value:BIGINT#
+        ]]>
+    </select>
+    
+    <select id="find_zones_by_app_and_engine" parameterClass="map" resultMap="rm_Zone">
+    	<![CDATA[
+            SELECT a.* from zone a, app_zone b, zone_engine c 
+            where a.id = b.zone_id and b.zone_id = c.zone_id
+            and ((b.app_id = #appId# and c.engine_id = #engineId# and b.is_baid = 0)
+            	or (b.app_id = #baseId# and c.engine_id = #engineId# and b.is_baid = 1))
+        ]]>
+    </select>
+    
+    <select id="countZone" resultClass="long" parameterClass="Zone">
+  		<![CDATA[
+            SELECT count(*) FROM $tableName$
+        ]]>
+        <include refid="whereConditionZone"/>
+  	</select>
+    
+    <delete id="removeZone" parameterClass="Zone">
+        <![CDATA[
+            DELETE FROM $tableName$
+        ]]>
+        <include refid="whereConditionZone"/>
+    </delete>
+    
+</sqlMap>

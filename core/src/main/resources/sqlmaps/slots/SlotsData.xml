@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="SlotsDataSQL">
+    
+    <typeAlias alias="SlotsData" type="com.ngnsoft.ngp.component.slots.model.SlotsData"/>
+    
+    <resultMap id="rm_SlotsData" class="SlotsData">
+        <result property="userId" column="user_id"/>
+        <result property="integral" column="integral"/>
+        <result property="nick" column="nick"/>
+        <result property="ulld" column="ulld"/>
+        <result property="rewards" column="rewards"/>
+        <result property="eligible" column="eligible"/>
+        <result property="status" column="status"/>
+        <result property="collectStatus" column="collect_status"/>
+        <result property="statusDetail" column="status_detail"/>
+        <result property="jsonData" column="json_data"/>
+        <result property="activityData" column="activity_data"/>
+        <result property="touchTime" column="touch_time"/>
+        <result property="actionTime" column="action_time"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="collectTime" column="collect_time"/>
+        <result property="level" column="level"/>
+        <result property="coins" column="coins"/>
+    </resultMap>
+    
+    <insert id="saveSlotsData" parameterClass="SlotsData">
+        <![CDATA[
+            INSERT INTO $tableName$ (user_id, nick, ulld, eligible, collect_status, collect_time, status, rewards, integral, status_detail, json_data, activity_data, touch_time, action_time, create_time, update_time) 
+            VALUES (#userId#, #nick#, #ulld#, #eligible#, #collectStatus#, #collectTime#, #status#, #rewards#, #integral#, #statusDetail#, #jsonData#, #activityData#, #touchTime#, #actionTime#, #createTime#, #updateTime#)
+        ]]>
+    </insert>
+    
+    <sql id="Example_slots_In_List_Clause" >
+            <iterate property="rangeList" open="(" close=")" conjunction=",">
+    		#rangeList[]#
+            </iterate>
+    </sql>
+    
+    <sql id="whereConditionSlotsData">
+        <dynamic prepend="WHERE">
+            <isNotNull property="userId" prepend="AND">
+		<![CDATA[
+                    user_id = #userId#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findSlotsData" parameterClass="SlotsData" resultMap="rm_SlotsData">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionSlotsData"/>
+    </select>
+    
+    <select id="find_integral_by_slots_user" parameterClass="map" resultMap="rm_SlotsData">
+    	<![CDATA[
+    		select * FROM slots_data where eligible = 1 
+    	]]>
+    	<isEqual property="collectStatus" compareValue="0" prepend="and">
+    		collect_status = #collectStatus# ORDER BY $type$ DESC
+    	</isEqual>
+    	<isEqual property="collectStatus" compareValue="1" prepend="and">
+    		collect_status = #collectStatus# ORDER BY $type$
+    	</isEqual>
+            <isNull property="collectStatus">
+		<![CDATA[
+                    ORDER BY $type$ DESC
+		]]>
+            </isNull>
+        <![CDATA[
+        	 , touch_time asc limit #count#
+        ]]>
+    </select>
+    
+    <select id="find_ranking_by_slots_user" parameterClass="map" resultClass="long">
+    	<![CDATA[
+    		select count(1) FROM slots_data sd1, slots_data sd2 where 
+    		sd1.user_id != #userId# and sd2.user_id = #userId# and sd1.eligible =1 and 
+    		((sd1.integral > sd2.integral) or ( sd1.integral = sd2.integral and sd1.touch_time < sd2.touch_time))
+    	]]>
+    </select>
+    
+    <select id="find_collect_ranking_by_slots_user" parameterClass="map" resultClass="long">
+    	<![CDATA[
+    		select count(1) FROM slots_data sd1, slots_data sd2 where 
+    		sd1.user_id != #userId# and sd2.user_id = #userId# 
+    	]]>
+		<isNotNull property="collectStatus" prepend="AND">
+			<![CDATA[
+	             sd1.collect_status = #collectStatus#
+			]]>
+       	</isNotNull>
+   	 	<![CDATA[
+   	 		and ((sd1.collect_time < sd2.collect_time) or ( sd1.collect_time = sd2.collect_time and sd1.user_id < sd2.user_id))
+   	 	]]>
+    </select>
+    
+    <update id="update_integral_into_zero" parameterClass="map">
+    	 <![CDATA[
+            update slots_data set integral = 0, collect_status = 0, rewards = 0, activity_data = #activityData#
+        ]]>
+    </update>
+    
+    <update id="updateSlotsData" parameterClass="SlotsData">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="status" prepend=",">
+		<![CDATA[
+                    status = #status#
+		]]>
+            </isNotNull>
+            <isNotNull property="collectStatus" prepend=",">
+		<![CDATA[
+                    collect_status = #collectStatus#
+		]]>
+            </isNotNull>
+            <isNotNull property="statusDetail" prepend=",">
+		<![CDATA[
+                    status_detail = #statusDetail#
+		]]>
+            </isNotNull>
+            <isNotNull property="ulld" prepend=",">
+		<![CDATA[
+                    ulld = #ulld#
+		]]>
+            </isNotNull>
+            <isNotNull property="eligible" prepend=",">
+		<![CDATA[
+                    eligible = #eligible#
+		]]>
+            </isNotNull>
+            <isNotNull property="rewards" prepend=",">
+		<![CDATA[
+                    rewards = #rewards#
+		]]>
+            </isNotNull>
+            <isNotNull property="nick" prepend=",">
+		<![CDATA[
+                    nick = #nick#
+		]]>
+            </isNotNull>
+            <isNotNull property="level" prepend=",">
+		<![CDATA[
+                    level = #level#
+		]]>
+            </isNotNull>
+            <isNotNull property="coins" prepend=",">
+		<![CDATA[
+                    coins = #coins#
+		]]>
+            </isNotNull>
+            <isNotNull property="integral" prepend=",">
+		<![CDATA[
+                    integral = #integral#
+		]]>
+            </isNotNull>
+            <isNotNull property="jsonData" prepend=",">
+		<![CDATA[
+                    json_data = #jsonData#
+		]]>
+            </isNotNull>
+            <isNotNull property="activityData" prepend=",">
+		<![CDATA[
+                    activity_data = #activityData#
+		]]>
+            </isNotNull>
+            <isNotNull property="touchTime" prepend=",">
+		<![CDATA[
+                    touch_time = #touchTime#
+		]]>
+            </isNotNull>
+            <isNotNull property="actionTime" prepend=",">
+		<![CDATA[
+                    action_time = #actionTime#
+		]]>
+            </isNotNull>
+            <isNotNull property="updateTime" prepend=",">
+		<![CDATA[
+                    update_time = #updateTime#
+		]]>
+            </isNotNull>
+            <isNotNull property="collectTime" prepend=",">
+		<![CDATA[
+                    collect_time = #collectTime#
+		]]>
+            </isNotNull>
+        </dynamic>
+        <dynamic prepend="WHERE">
+            <isNotNull property="userId" prepend="AND">
+		<![CDATA[
+                    user_id = #userId#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </update>
+
+</sqlMap>

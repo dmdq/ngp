@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="CocClanUserSQL">
+    
+    <typeAlias alias="CocClanUser" type="com.ngnsoft.ngp.component.coc.model.CocClanUser"/>
+
+    <resultMap id="rm_cocClanUser_base" class="CocClanUser">  
+        <result property="id"/>
+        <result property="clanId" column="clan_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="role"/>
+    </resultMap>
+    
+    <insert id="saveCocClanUser" parameterClass="CocClanUser">
+        <![CDATA[
+            INSERT INTO $tableName$ (id, clan_id, user_id, role) 
+            VALUES (#id#, #clanId#, #userId#, #role#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionCocClanUser">
+	<dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="clanId" prepend="AND">
+		<![CDATA[
+                    clan_id = #clanId#
+		]]>
+            </isNotNull>
+            <isNotNull property="userId" prepend="AND">
+		<![CDATA[
+                    user_id = #userId#
+		]]>
+            </isNotNull>
+            <isNotNull property="role" prepend="AND">
+		<![CDATA[
+                    role = #role#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findCocClanUser" parameterClass="CocClanUser" resultMap="rm_cocClanUser_base">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionCocClanUser"/>
+    </select>
+    
+    <select id="countCocClanUser" resultClass="long" parameterClass="CocClanUser">
+  		<![CDATA[
+            SELECT count(*) FROM $tableName$
+        ]]>
+        <include refid="whereConditionCocClanUser"/>
+  	</select>
+    
+    <update id="updateCocClanUser" parameterClass="CocClanUser">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="clanId" prepend=",">
+		<![CDATA[
+                    clan_id = #clanId#
+		]]>
+            </isNotNull>
+            <isNotNull property="userId" prepend=",">
+		<![CDATA[
+                    user_id = #userId#
+		]]>
+            </isNotNull>
+             <isNotNull property="role" prepend=",">
+		<![CDATA[
+                    role = #role#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where id = #id#
+    </update>
+    
+    <delete id="removeCocClanUser" parameterClass="CocClanUser">
+        <![CDATA[
+            DELETE FROM $tableName$
+        ]]>
+        <include refid="whereConditionCocClanUser"/>
+    </delete>
+    
+</sqlMap>

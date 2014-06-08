@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="AdTrackSQL">
+    
+    <typeAlias alias="AdTrack" type="com.ngnsoft.ngp.model.AdTrack"/>
+    
+    <resultMap id="rm_AdTrack" class="AdTrack">
+        <result property="id"/>
+        <result property="adAppid" column="ad_appid"/>
+        <result property="adAction"  column="ad_action"/>
+        <result property="appId" column="app_id"/>
+        <result property="deviceId" column="device_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createTimeMs" column="create_time_ms"/>
+    </resultMap>
+    
+    <insert id="saveAdTrack" parameterClass="AdTrack">
+        <![CDATA[
+            INSERT INTO $tableName$ (ad_appid, ad_action, app_id, device_id, create_time, create_time_ms) 
+            VALUES (#adAppid#, #adAction#, #appId#, #deviceId#, #createTime#, #createTimeMs#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionAdTrack">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="appId" prepend="AND">
+		<![CDATA[
+                    app_id = #appId#
+		]]>
+            </isNotNull>
+            <isNotNull property="adAction" prepend="AND">
+		<![CDATA[
+                    ad_action = #adAction#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findAdTrack" parameterClass="AdTrack" resultMap="rm_AdTrack">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionAdTrack"/>
+    </select>
+
+</sqlMap>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//ibatis.apache.org//DTD SQL Map Config 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>
+    <settings enhancementEnabled="true" maxTransactions="1024"
+        maxRequests="2048" maxSessions="512"/>
+    
+    <typeHandler jdbcType="BLOB" javaType ="byte" callback="org.springframework.orm.ibatis.support.BlobByteArrayTypeHandler"/>
+    <typeHandler jdbcType="CLOB" javaType="java.lang.String" callback="org.springframework.orm.ibatis.support.ClobStringTypeHandler"/>
+    
+    <sqlMap resource="sqlmaps/ngp/AdTrack.xml"/>
+    <sqlMap resource="sqlmaps/ngp/App.xml"/>
+    <sqlMap resource="sqlmaps/ngp/AppConfig.xml"/>
+    <sqlMap resource="sqlmaps/ngp/AppData.xml"/>
+    <sqlMap resource="sqlmaps/ngp/AppVersion.xml"/>
+    <sqlMap resource="sqlmaps/ngp/AppZone.xml"/>
+    <sqlMap resource="sqlmaps/ngp/CoinHistory.xml"/>
+    <sqlMap resource="sqlmaps/ngp/Device.xml"/>
+    <sqlMap resource="sqlmaps/ngp/EngineNode.xml"/>
+    <sqlMap resource="sqlmaps/ngp/FileStorage.xml"/>
+    <sqlMap resource="sqlmaps/ngp/IosOrder.xml"/>
+    <sqlMap resource="sqlmaps/ngp/Message.xml"/>
+    <sqlMap resource="sqlmaps/ngp/Order.xml"/>
+    <sqlMap resource="sqlmaps/ngp/PaypalIndent.xml"/>
+    <sqlMap resource="sqlmaps/ngp/PaypalOrder.xml"/>
+    <sqlMap resource="sqlmaps/ngp/Placard.xml"/>
+    <sqlMap resource="sqlmaps/ngp/PlacardTarget.xml"/>
+    <sqlMap resource="sqlmaps/ngp/Promo.xml"/>
+    <sqlMap resource="sqlmaps/ngp/Product.xml"/>
+    <sqlMap resource="sqlmaps/ngp/PromoCount.xml"/>
+    <sqlMap resource="sqlmaps/ngp/PushToken.xml"/>
+    <sqlMap resource="sqlmaps/ngp/ResUpdate.xml"/>
+    <sqlMap resource="sqlmaps/ngp/ResUpdateFile.xml"/>
+    <sqlMap resource="sqlmaps/ngp/Sale.xml"/>
+    <sqlMap resource="sqlmaps/ngp/SaleHistory.xml"/>
+    <sqlMap resource="sqlmaps/ngp/SnsData.xml"/>
+    <sqlMap resource="sqlmaps/ngp/SnsFriend.xml"/>
+    <sqlMap resource="sqlmaps/ngp/User.xml"/>
+    <sqlMap resource="sqlmaps/ngp/UserAccount.xml"/>
+    <sqlMap resource="sqlmaps/ngp/UserActivity.xml"/>
+    <sqlMap resource="sqlmaps/ngp/UserActivityHistory.xml"/>
+    <sqlMap resource="sqlmaps/ngp/UserApp.xml"/>
+    <sqlMap resource="sqlmaps/ngp/UserAppData.xml"/>
+    <sqlMap resource="sqlmaps/ngp/UserFriend.xml"/>
+    <sqlMap resource="sqlmaps/ngp/UserKey.xml"/>
+    <sqlMap resource="sqlmaps/ngp/UserProfile.xml"/>
+    <sqlMap resource="sqlmaps/ngp/UserRole.xml"/>
+    <sqlMap resource="sqlmaps/ngp/UserSession.xml"/>
+    <sqlMap resource="sqlmaps/ngp/UserSessionCount.xml"/>
+    <sqlMap resource="sqlmaps/ngp/Zone.xml"/>
+    <sqlMap resource="sqlmaps/ngp/ZoneEngine.xml"/>
+    
+</sqlMapConfig>

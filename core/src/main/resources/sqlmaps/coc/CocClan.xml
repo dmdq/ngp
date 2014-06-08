@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="CocClanSQL">
+    
+    <typeAlias alias="CocClan" type="com.ngnsoft.ngp.component.coc.model.CocClan"/>
+
+    <resultMap id="rm_cocClan_base" class="CocClan">  
+        <result property="id"/>
+        <result property="name"/>
+        <result property="creator"/>
+        <result property="status"/>
+        <result property="notice"/>
+        <result property="icon" column="icon_urn"/>
+        <result property="type"/>
+        <result property="level"/>
+        <result property="maxMember" column="max_num"/>
+        <result property="memberNum" column="mem_num"/>
+        <result property="limit" column="limit_level"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    
+    <insert id="saveCocClan" parameterClass="CocClan">
+        <![CDATA[
+            INSERT INTO $tableName$ (id, name, creator, status, notice, icon_urn, type, level, limit_level, mem_num, max_num, create_time, update_time) 
+            VALUES (#id#, #name#, #creator#, #status#, #notice#, #icon#, #type#, #level#, #limit#, #memberNum#, #maxMember#, #createTime#, #updateTime#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionCocClan">
+	<dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="name" prepend="AND">
+		<![CDATA[
+                    name = #name#
+		]]>
+            </isNotNull>
+            <isNotNull property="creator" prepend="AND">
+		<![CDATA[
+                    creator = #creator#
+		]]>
+            </isNotNull>
+            <isNotNull property="status" prepend="AND">
+		<![CDATA[
+                    status = #status#
+		]]>
+            </isNotNull>
+            <isNotNull property="type" prepend="AND">
+		<![CDATA[
+                    type = #type#
+		]]>
+            </isNotNull>
+            <isNotNull property="level" prepend="AND">
+		<![CDATA[
+                    level >= #level#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findCocClan" parameterClass="CocClan" resultMap="rm_cocClan_base">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionCocClan"/>
+    </select>
+    
+    <select id="countCocClan" resultClass="long" parameterClass="CocClan">
+  		<![CDATA[
+            SELECT count(*) FROM $tableName$
+        ]]>
+        <include refid="whereConditionCocClan"/>
+  	</select>
+  	
+  	<select id="find_clans_order_by_level" parameterClass="map" resultMap="rm_cocClan_base">
+  		<![CDATA[
+            SELECT * FROM drag_clan order by level desc
+        ]]>
+        <include refid="whereConditionCocClan"/>
+  	</select>
+  	
+  	<select id="count_clans_order_by_level" parameterClass="map" resultClass="long">
+  		<![CDATA[
+            SELECT count(1) FROM drag_clan order by level desc
+        ]]>
+        <include refid="whereConditionCocClan"/>
+  	</select>
+    
+    <update id="updateCocClan" parameterClass="CocClan">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="name" prepend=",">
+		<![CDATA[
+                    name = #name#
+		]]>
+            </isNotNull>
+            <isNotNull property="creator" prepend=",">
+		<![CDATA[
+                    creator = #creator#
+		]]>
+            </isNotNull>
+             <isNotNull property="notice" prepend=",">
+		<![CDATA[
+                    notice = #notice#
+		]]>
+            </isNotNull>
+             <isNotNull property="status" prepend=",">
+		<![CDATA[
+                    status = #status#
+		]]>
+            </isNotNull>
+             <isNotNull property="icon" prepend=",">
+		<![CDATA[
+                    icon_urn = #icon#
+		]]>
+            </isNotNull>
+             <isNotNull property="type" prepend=",">
+		<![CDATA[
+                    type = #type#
+		]]>
+            </isNotNull>
+            <isNotNull property="level" prepend=",">
+		<![CDATA[
+                    level = #level#
+		]]>
+            </isNotNull>
+            <isNotNull property="limit" prepend=",">
+		<![CDATA[
+                    limit_level = #limit#
+		]]>
+            </isNotNull>
+            <isNotNull property="maxMember" prepend=",">
+		<![CDATA[
+                    max_num = #maxMember#
+		]]>
+            </isNotNull>
+            <isNotNull property="memberNum" prepend=",">
+		<![CDATA[
+                    mem_num = #memberNum#
+		]]>
+            </isNotNull>
+            <isNotNull property="updateTime" prepend=",">
+		<![CDATA[
+                    update_time = #updateTime#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where id = #id#
+    </update>
+    
+    <delete id="removeCocClan" parameterClass="CocClan">
+        <![CDATA[
+            DELETE FROM $tableName$
+        ]]>
+        <include refid="whereConditionCocClan"/>
+    </delete>
+    
+    
+</sqlMap>

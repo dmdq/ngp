@@ -1,0 +1,95 @@
+package com.ngnsoft.ngp.protocol.http;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.jcraft.jzlib.ZInputStream;
+import com.ngnsoft.ngp.Request;
+
+public abstract class HttpBaseTest {
+
+	static String sid = null;
+	
+//	protected static String host = "http://54.221.249.31:8081/ngs/"; //s3
+	
+//	protected static String host = "http://42.120.9.103:7080/ngs/"; //s2
+	
+// 	protected static String host = "http://50.17.233.103:8081/ngs/"; //s2
+	
+//	protected static String host = "http://lsen.ngnsoft.com:8080/ngs/"; //s1
+	
+	protected static String host = "http://42.120.9.103:8081/ngs/"; //s1
+	
+//	protected static String host = "http://127.0.0.1:8080/ngp-server/";
+	
+	
+	public abstract void testProtocol() throws Exception;
+
+	protected abstract String getProtocolName();
+	
+	protected abstract Request getBaseReq();
+	
+	protected abstract JSONObject getBizData();
+
+	protected Request getReq(Map<String, Object> paramMap) throws JSONException {
+		Request jo = getBaseReq();
+		jo.put("key", getProtocolName());
+		if(paramMap != null) {
+			for(String mapKey : paramMap.keySet()) {
+				jo.put(mapKey, paramMap.get(mapKey));
+			}
+		}
+		JSONObject biz = getBizData();
+		if(biz != null) {
+			jo.put("biz", biz);
+		}
+		return jo;
+	}
+
+	protected void postSend(String hostUrl, Request req, List<NameValuePair> nameValuePairs) {
+		try {
+			String url = hostUrl + "gr";
+
+			HttpClient httpClient = new DefaultHttpClient();
+			HttpPost httpPost = new HttpPost(url);  
+			httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+			// Execute HTTP Post Request
+			HttpResponse response = httpClient.execute(httpPost);
+
+			HttpEntity responseEntity = response.getEntity();  
+
+			System.out.println("----------------------------------------");  
+			System.out.println(response.getStatusLine());  
+
+
+			ZInputStream zin = new ZInputStream(responseEntity.getContent());
+			BufferedReader reader = new BufferedReader(new InputStreamReader(zin));
+			String line;
+			StringBuffer content = new StringBuffer();
+			while ((line = reader.readLine()) != null) {
+				content.append(line + "\n");
+			}
+			reader.close();
+			String result = content.toString();
+			JSONObject json = new JSONObject(result);
+			System.out.println(json);
+			
+		} catch (Exception ex) {
+			
+		}
+		
+	}
+	
+}

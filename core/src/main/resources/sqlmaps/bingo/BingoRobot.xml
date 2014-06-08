@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="BingoRobotSQL">
+    
+    <typeAlias alias="BingoRobot" type="com.ngnsoft.ngp.component.bingo.model.BingoRobot"/>
+    
+    <resultMap id="rm_BingoRobot" class="BingoRobot">
+        <result property="id"/>
+        <result property="data" column="data"/>
+        <result property="joinRate" column="join_rate"/>
+        <result property="readyRate" column="ready_rate"/>
+        <result property="quitRate" column="quit_rate"/>
+        <result property="bingoRate" column="bingo_rate"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+    
+    <insert id="saveBingoRobot" parameterClass="BingoRobot">
+        <![CDATA[
+            INSERT INTO $tableName$ (data, join_rate, ready_rate, quit_rate, bingo_rate, create_time) 
+            VALUES (#data#, #joinRate#, #readyRate#, #quitRate#, #bingoRate#, #createTime#)
+        ]]>
+        <selectKey resultClass="java.lang.Long" keyProperty="id" type="post">
+            select last_insert_id();
+        </selectKey>
+    </insert>
+    
+    <update id="updateBingoRobot" parameterClass="BingoRobot">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="data" prepend=",">
+		<![CDATA[
+                    data = #data#
+		]]>
+            </isNotNull>
+            <isNotNull property="joinRate" prepend=",">
+		<![CDATA[
+                    join_rate = #joinRate#
+		]]>
+            </isNotNull>
+            <isNotNull property="readyRate" prepend=",">
+		<![CDATA[
+                    ready_rate = #readyRate#
+		]]>
+            </isNotNull>
+            <isNotNull property="quitRate" prepend=",">
+		<![CDATA[
+                    quit_rate = #quitRate#
+		]]>
+            </isNotNull>
+            <isNotNull property="bingoRate" prepend=",">
+		<![CDATA[
+                    bingo_rate = #bingoRate#
+		]]>
+            </isNotNull>
+            <isNotNull property="createTime" prepend=",">
+		<![CDATA[
+                    create_time = #createTime#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where id = #id#
+    </update>
+    
+    <sql id="whereConditionBingoRobot">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findBingoRobot" parameterClass="BingoRobot" resultMap="rm_BingoRobot">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionBingoRobot"/>
+    </select>
+    
+    <select id="countBingoRobot" parameterClass="BingoRobot" resultClass="long">
+        <![CDATA[
+            SELECT count(*) FROM $tableName$
+        ]]>
+        <include refid="whereConditionBingoRobot"/>
+    </select>
+    
+	<delete id="removeBingoRobot" parameterClass="BingoRobot">
+		<![CDATA[
+			DELETE FROM $tableName$
+		]]>
+		<include refid="whereConditionBingoRobot"/>
+	</delete>
+	
+</sqlMap>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="SaleSQL">
+    
+    <typeAlias alias="Sale" type="com.ngnsoft.ngp.model.Sale"/>
+    <typeAlias alias="App" type="com.ngnsoft.ngp.model.App"/>
+    
+    <resultMap id="rm_Sale" class="Sale">
+        <result property="id"/>
+        <result property="ad"/>
+        <result property="appId" column="app_id"/>
+        <result property="deviceId" column="device_id"/>
+        <result property="pid"/>
+        <result property="jsonData" column="json_data"/>
+        <result property="ip"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+    
+    <resultMap id="rm_sale_with_app" class="Sale" extends="rm_Sale" >
+        <result property="app" column="app_id" select="find_app_by_sale"/>
+    </resultMap>
+    
+    <resultMap id="rm_app" class="App">  
+        <result property="id"/>
+        <result property="baseId" column="base_id"/>
+        <result property="name"/>
+    </resultMap>
+    
+    <insert id="saveSale" parameterClass="Sale">
+        <![CDATA[
+            INSERT INTO $tableName$ (ad, app_id, device_id, pid, json_data, ip, create_time) 
+            VALUES (#ad#, #appId#, #deviceId#, #pid#, #jsonData#, #ip#, #createTime#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionSale">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="ad" prepend="AND">
+		<![CDATA[
+                    ad = #ad#
+		]]>
+            </isNotNull>
+            <isNotNull property="appId" prepend="AND">
+		<![CDATA[
+                    app_id = #appId#
+		]]>
+            </isNotNull>
+            <isNotNull property="deviceId" prepend="AND">
+		<![CDATA[
+                    device_id = #deviceId#
+		]]>
+            </isNotNull>
+            <isNotNull property="pid" prepend="AND">
+		<![CDATA[
+                    pid = #pid#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findSale" parameterClass="Sale" resultMap="rm_Sale">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionSale"/>
+    </select>
+    
+    <select id="find_sale_with_app" parameterClass="Sale" resultMap="rm_sale_with_app">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionSale"/>
+    </select>
+    
+    
+    <select id="find_app_by_sale" resultMap="rm_app">
+        <![CDATA[
+            SELECT a.* FROM app a WHERE a.id = #value#
+        ]]>
+    </select>
+    
+    <select id="countSale" resultClass="long" parameterClass="Sale">
+  		<![CDATA[
+            SELECT count(*) FROM $tableName$
+        ]]>
+        <include refid="whereConditionSale"/>
+  	</select>
+  	
+  	<delete id="removeSale" parameterClass="Sale">
+        <![CDATA[
+            DELETE FROM $tableName$
+        ]]>
+        <include refid="whereConditionSale"/>
+    </delete>
+
+</sqlMap>

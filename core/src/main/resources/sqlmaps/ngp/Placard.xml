@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="PlacardSQL">
+    
+    <typeAlias alias="Placard" type="com.ngnsoft.ngp.model.Placard"/>
+    
+    <resultMap id="rm_Placard" class="Placard">
+        <result property="id"/>
+        <result property="title"/>
+        <result property="titleSize" column="title_size"/>
+        <result property="titleColor" column="title_color"/>
+        <result property="body" column="body"/>
+        <result property="bodySize" column="body_size"/>
+        <result property="bodyColor" column="body_color"/>
+        <result property="status" column="status"/>
+        <result property="createBy" column="create_by"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+    
+    <insert id="savePlacard" parameterClass="Placard">
+        <![CDATA[
+            INSERT INTO $tableName$ (title, title_size, title_color, body, body_size, body_color, status, create_time, create_by, start_time, end_time) 
+            VALUES (#title#, #titleSize#, #titleColor#, #body#, #bodySize#, #bodyColor#, #status#, #createTime#,  #createBy#, #startTime#, #endTime#)
+        ]]>
+        <selectKey resultClass="java.lang.Long" keyProperty="id" type="post">
+            select last_insert_id();
+        </selectKey>
+    </insert>
+    
+    <update id="updatePlacard" parameterClass="Placard">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="title" prepend=",">
+		<![CDATA[
+                    title = #title#
+		]]>
+            </isNotNull>
+            <isNotNull property="titleSize" prepend=",">
+		<![CDATA[
+                    title_size = #titleSize#
+		]]>
+            </isNotNull>
+            <isNotNull property="titleColor" prepend=",">
+		<![CDATA[
+                    title_color = #titleColor#
+		]]>
+            </isNotNull>
+             <isNotNull property="body" prepend=",">
+		<![CDATA[
+                    body = #body#
+		]]>
+            </isNotNull>
+             <isNotNull property="bodySize" prepend=",">
+		<![CDATA[
+                    body_size = #bodySize#
+		]]>
+            </isNotNull>
+             <isNotNull property="bodyColor" prepend=",">
+		<![CDATA[
+                    body_color = #bodyColor#
+		]]>
+            </isNotNull>
+            <isNotNull property="status" prepend=",">
+		<![CDATA[
+                    status = #status#
+		]]>
+			</isNotNull>
+            <isNotNull property="startTime" prepend=",">
+		<![CDATA[
+                    start_time = #startTime#
+		]]>
+			</isNotNull>
+            <isNotNull property="endTime" prepend=",">
+		<![CDATA[
+                    end_time = #endTime#
+		]]>
+			</isNotNull>
+        </dynamic>
+        where id = #id#
+    </update>
+    
+    <sql id="whereConditionPlacard">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="title" prepend="AND">
+		<![CDATA[
+                    title like '%$title$%'
+		]]>
+            </isNotNull>
+            <isNotNull property="status" prepend="AND">
+		<![CDATA[
+                    status = #status#
+		]]>
+            </isNotNull>
+            <isNotNull property="startTime" prepend="AND">
+		<![CDATA[
+                    start_time >= #startTime#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <sql id="Example_In_List_Clause" >
+            <iterate property="rangeList" open="(" close=")" conjunction=",">
+    		#rangeList[]#
+            </iterate>
+    </sql>
+    
+    <select id="findPlacard" parameterClass="Placard" resultMap="rm_Placard">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionPlacard"/>
+    </select>
+    
+    <select id="countPlacard" parameterClass="Placard" resultClass="long">
+        <![CDATA[
+            SELECT count(*) FROM $tableName$
+        ]]>
+        <include refid="whereConditionPlacard"/>
+    </select>
+    
+    <select id="find_placard_by_base_id" parameterClass="map" resultClass="long">
+        <![CDATA[
+            SELECT a.id from placard a where a.id in 
+            	(select b.placard_id from placard_target b where 
+            	(app_id = #baseId# and is_baid = 1) and (app_version is null or app_version = #appVersion#)
+            	 and (
+        ]]>
+        <isNotEmpty property="rangeList">
+            zone_id in
+            <include refid="Example_In_List_Clause" /> or
+        </isNotEmpty>
+        <![CDATA[
+            	zone_id is null))
+            	and status = 0 and start_time <= #sysDate# and end_time > #sysDate#
+        ]]>    	
+        
+    	
+    </select>
+    
+    <select id="find_placard_by_app_id" parameterClass="map" resultClass="long">
+        <![CDATA[
+            SELECT a.id from placard a where a.id in 
+            	(select b.placard_id from placard_target b where 
+            	((app_id = #appId# and is_baid = 0) and (app_version is null or app_version = #appVersion#)
+            	and (
+        ]]>
+        <isNotEmpty property="rangeList">
+            zone_id in
+            <include refid="Example_In_List_Clause" /> or
+        </isNotEmpty>
+        <![CDATA[
+            	zone_id is null))
+            	or (app_id is null and app_version is null))
+            	and status = 0 and start_time <= #sysDate# and end_time > #sysDate#
+        ]]>
+    </select>
+	
+	<delete id="removePlacard" parameterClass="Placard">
+		<![CDATA[
+			DELETE FROM $tableName$
+		]]>
+		<include refid="whereConditionPlacard"/>
+	</delete>
+	
+</sqlMap>

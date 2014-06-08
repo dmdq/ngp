@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ResUpdateFileSQL">
+    
+    <typeAlias alias="ResUpdateFile" type="com.ngnsoft.ngp.model.ResUpdateFile"/>
+    
+    <resultMap id="rm_ResUpdateFile" class="ResUpdateFile">
+        <result property="id"/>
+        <result property="fileName" column="file_name"/>
+        <result property="fileUrn" column="file_urn"/>
+        <result property="ruId" column="ru_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    
+    <insert id="saveResUpdateFile" parameterClass="ResUpdateFile">
+        <![CDATA[
+            INSERT INTO $tableName$ (file_name, file_urn, ru_id, create_time, update_time) 
+            VALUES (#fileName#, #fileUrn#, #ruId#, #createTime#, #updateTime#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionResUpdateFile">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="fileName" prepend="AND">
+		<![CDATA[
+                    file_name = #fileName#
+		]]>
+            </isNotNull>
+            <isNotNull property="fileUrn" prepend="AND">
+		<![CDATA[
+                    file_urn = #fileUrn#
+		]]>
+            </isNotNull>
+            <isNotNull property="ruId" prepend="AND">
+		<![CDATA[
+                    ru_id = #ruId#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findResUpdateFile" parameterClass="ResUpdateFile" resultMap="rm_ResUpdateFile">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionResUpdateFile"/>
+    </select>
+    
+    <select id="find_res_update_file_by_ruId" parameterClass="map" resultMap="rm_ResUpdateFile">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <dynamic prepend="WHERE">
+            <isNotNull property="ruIds" prepend="AND">
+		<![CDATA[
+                    ru_id in $ruIds$
+		]]>
+            </isNotNull>
+        </dynamic>
+    </select>
+    
+    <select id="countResUpdateFile" resultClass="long" parameterClass="ResUpdateFile">
+  		<![CDATA[
+            SELECT count(*) FROM $tableName$
+        ]]>
+        <include refid="whereConditionResUpdateFile"/>
+  	</select>
+	
+	<delete id="removeResUpdateFile" parameterClass="ResUpdateFile">
+        <![CDATA[
+            DELETE FROM $tableName$
+        ]]>
+        <include refid="whereConditionResUpdateFile"/>
+    </delete>
+	
+</sqlMap>

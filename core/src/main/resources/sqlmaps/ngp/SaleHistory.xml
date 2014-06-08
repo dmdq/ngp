@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="SaleHistorySQL">
+    
+    <typeAlias alias="SaleHistory" type="com.ngnsoft.ngp.model.SaleHistory"/>
+    
+    <resultMap id="rm_SaleHistory" class="SaleHistory">
+        <result property="id"/>
+        <result property="ad"/>
+        <result property="appId" column="app_id"/>
+        <result property="deviceId" column="device_id"/>
+        <result property="pid"/>
+        <result property="jsonData" column="json_data"/>
+        <result property="userId" column="user_id"/>
+        <result property="ip"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+    
+    <insert id="saveSaleHistory" parameterClass="SaleHistory">
+        <![CDATA[
+            INSERT INTO $tableName$ (ad, app_id, device_id, pid, json_data, user_id, ip, create_time) 
+            VALUES (#ad#, #appId#, #deviceId#, #pid#, #jsonData#, #userId#,  #ip#, #createTime#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionSaleHistory">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="ad" prepend="AND">
+		<![CDATA[
+                    ad = #ad#
+		]]>
+            </isNotNull>
+            <isNotNull property="appId" prepend="AND">
+		<![CDATA[
+                    app_id = #appId#
+		]]>
+            </isNotNull>
+            <isNotNull property="deviceId" prepend="AND">
+		<![CDATA[
+                    device_id = #deviceId#
+		]]>
+            </isNotNull>
+            <isNotNull property="pid" prepend="AND">
+		<![CDATA[
+                    pid = #pid#
+		]]>
+            </isNotNull>
+            <isNotNull property="userId" prepend="AND">
+		<![CDATA[
+                    user_id = #userId#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findSaleHistory" parameterClass="SaleHistory" resultMap="rm_SaleHistory">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionSaleHistory"/>
+    </select>
+	
+	<select id="countSaleHistory" parameterClass="SaleHistory" resultClass="long">
+        <![CDATA[
+            SELECT count(1) FROM $tableName$
+        ]]>
+        <include refid="whereConditionSaleHistory"/>
+    </select>
+	
+	<select id="find_saleHistory_by_time_and_appId" parameterClass="map" resultClass="java.util.HashMap">
+        <![CDATA[
+           SELECT sh.user_id as userId,sd.nick, sd.level, sd.coins, sp.amount, tem.count, sh.create_time as create_time, sd.create_time as create_time1 FROM sale_history sh 
+			INNER join slots_product sp on sh.pid = sp.product_id 
+			INNER join slots_data sd on sh.user_id = sd.user_id 
+			inner join (SELECT count(1) as count, user_id from sale_history group by user_id) as tem on sh.user_id = tem.user_id
+			WHERE DATE_FORMAT(sh.create_time ,"%Y/%m/%d") between #startTime# and #endTime# 
+        ]]>
+        <isNotNull property="appId" prepend="AND">
+        	sh.app_id = #appId#
+        </isNotNull>
+        <isNotNull property="userId" prepend="AND">
+        	sh.user_id = #userId#
+        </isNotNull>
+        ORDER BY sh.create_time DESC
+    </select>
+	
+	<select id="count_saleHistory_by_time" parameterClass="map" resultClass="long">
+        <![CDATA[
+            SELECT count(1) FROM sale_history sh 
+            INNER join slots_product sp on sh.pid = sp.product_id 
+            where DATE_FORMAT(sh.create_time ,"%Y/%m/%d") between #startTime# and #endTime#
+        ]]>
+        <isNotNull property="appId" prepend="AND">
+        	sh.app_id = #appId#
+        </isNotNull>
+        <isNotNull property="userId" prepend="AND">
+        	sh.user_id = #userId#
+        </isNotNull>
+    </select>
+	
+	<select id="count_saleHistory_by_population" parameterClass="map" resultClass="long">
+        <![CDATA[
+            SELECT count(1) FROM (SELECT count(1) FROM sale_history sh join slots_product p on p.product_id = sh.pid where DATE_FORMAT(sh.create_time ,"%Y/%m/%d") between #startTime# and #endTime# 
+        ]]>
+        <isNotNull property="appId" prepend="AND">
+        	sh.app_id = #appId#
+        </isNotNull>
+        <isNotNull property="userId" prepend="AND">
+        	sh.user_id = #userId#
+        </isNotNull>
+        GROUP BY sh.user_id) as a
+    </select>
+	
+	<select id="sum_saleHistory_by_time_and_appId" parameterClass="map" resultClass="java.util.HashMap">
+        <![CDATA[
+            SELECT SUM(p.amount) as amount FROM sale_history sh join slots_product p on p.product_id = sh.pid 
+ 			where DATE_FORMAT(sh.create_time ,"%Y/%m/%d") between #startTime# and #endTime# 
+        ]]>
+        <isNotNull property="appId" prepend="AND">
+        	app_id = #appId#
+        </isNotNull>
+        <isNotNull property="userId" prepend="AND">
+        	sh.user_id = #userId#
+        </isNotNull>
+    </select>
+	
+	<select id="sum_saleHistory" parameterClass="SaleHistory" resultClass="java.util.HashMap">
+        <![CDATA[
+            SELECT SUM(p.amount) as amount FROM sale_history sh join slots_product p on p.product_id = sh.pid
+        ]]>
+    </select>
+	
+</sqlMap>

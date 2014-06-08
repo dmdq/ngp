@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="OrderSQL">
+    
+    <typeAlias alias="Order" type="com.ngnsoft.ngp.model.Order"/>
+    
+    <resultMap id="rm_order" class="Order">
+        <result property="orderId" column="order_id"/>
+        <result property="appId" column="app_id"/>
+        <result property="loginName" column="login_name"/>
+        <result property="amount" column="amount"/>
+        <result property="status" column="status"/>
+        <result property="payTime" column="pay_time"/>
+        <result property="deviceId" column="device_id"/>
+        <result property="pid" column="pid"/>
+        <result property="createTime" column="create_time"/>
+        <result property="jsonData" column="json_data"/>
+    </resultMap>
+    
+    <insert id="saveOrder" parameterClass="Order">
+        <![CDATA[
+            INSERT INTO $tableName$ (order_id, app_id, login_name, amount, status, pay_time, device_id, pid, create_time, json_data) 
+            VALUES (#orderId#, #appId#, #loginName#, #amount#, #status#, #payTime#, #deviceId#, #pid#, #createTime#, #jsonData#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionOrder">
+	<dynamic prepend="WHERE">
+			<isNotNull property="orderId" prepend="AND">
+		<![CDATA[
+                    order_id = #orderId#
+		]]>
+            </isNotNull>
+            <isNotNull property="loginName" prepend="AND">
+		<![CDATA[
+                    login_name = #loginName#
+		]]>
+            </isNotNull>
+            <isNotNull property="amount" prepend="AND">
+		<![CDATA[
+                    amount = #amount#
+		]]>
+            </isNotNull>
+            <isNotNull property="status" prepend="AND">
+		<![CDATA[
+                    status = #status#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findOrder" parameterClass="Order" resultMap="rm_order">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionOrder"/>
+    </select>
+    
+    
+    <select id="countOrder" resultClass="long" parameterClass="Order">
+  		<![CDATA[
+            SELECT count(*) FROM $tableName$
+        ]]>
+        <include refid="whereConditionOrder"/>
+  	</select>
+    
+    
+    
+    <update id="updateOrder" parameterClass="Order">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="loginName" prepend=",">
+		<![CDATA[
+                    login_name = #loginName#
+		]]>
+            </isNotNull>
+            <isNotNull property="amount" prepend=",">
+		<![CDATA[
+                    amount = #amount#
+		]]>
+            </isNotNull>
+            <isNotNull property="status" prepend=",">
+		<![CDATA[
+                    status = #status#
+		]]>
+            </isNotNull>
+             <isNotNull property="payTime" prepend=",">
+		<![CDATA[
+                    pay_time = #payTime#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where order_id = #orderId#
+    </update>
+    
+    <delete id="removeOrder" parameterClass="Order">
+        <![CDATA[
+            DELETE FROM $tableName$
+        ]]>
+        <include refid="whereConditionOrder"/>
+    </delete>
+    
+</sqlMap>

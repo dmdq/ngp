@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="AppZoneSQL">
+
+	<typeAlias alias="AppZone" type="com.ngnsoft.ngp.model.AppZone" />
+
+	<resultMap id="rm_AppZone" class="AppZone">
+		<result property="id" />
+		<result property="appId" column="app_id" />
+		<result property="isBaid" column="is_baid" />
+		<result property="zoneId" column="zone_id" />
+		<result property="createTime" column="create_time" />
+	</resultMap>
+
+	<sql id="whereConditionAppZone">
+		<dynamic prepend="WHERE">
+			<isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+			</isNotNull>
+			<isNotNull property="appId" prepend="AND">
+		<![CDATA[
+                    app_id like '%$appId$%'
+		]]>
+			</isNotNull>
+			<isNotNull property="zoneId" prepend="AND">
+		<![CDATA[
+                    zone_id like '%$zoneId$%'
+		]]>
+			</isNotNull>
+			<isNotNull property="createTime" prepend="AND">
+		<![CDATA[
+                    create_time > #createTime#
+		]]>
+			</isNotNull>
+		</dynamic>
+	</sql>
+
+	<select id="findAppZone" parameterClass="AppZone" resultMap="rm_AppZone">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+		<include refid="whereConditionAppZone" />
+	</select>
+
+	<select id="findAppZones" parameterClass="AppZone" resultMap="rm_AppZone">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+		<dynamic prepend="WHERE">
+			<isNotNull property="appId" prepend="AND">
+		<![CDATA[
+                    app_id like '%$appId$%'
+		]]>
+			</isNotNull>
+			<isNotNull property="zoneId" prepend="AND">
+		<![CDATA[
+                    zone_id like '%$zoneId$%'
+		]]>
+			</isNotNull>
+			<isNotNull property="isBaid" prepend="AND">
+		<![CDATA[
+                    is_baid = #isBaid#
+		]]>
+			</isNotNull>
+		</dynamic>
+	</select>
+
+	<insert id="saveAppZone" parameterClass="AppZone">
+        <![CDATA[
+            INSERT INTO $tableName$ (app_id, is_baid, zone_id, create_time) 
+            VALUES (#appId#, #isBaid#, #zoneId#, #createTime#)
+        ]]>
+		<selectKey resultClass="java.lang.Long" keyProperty="id"
+			type="post">
+			select last_insert_id();
+		</selectKey>
+	</insert>
+
+	<update id="updateAppZone" parameterClass="AppZone">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+		<dynamic prepend="SET">
+			<isNotNull property="appId" prepend=",">
+		<![CDATA[
+                    app_id = #appId#
+		]]>
+			</isNotNull>
+			<isNotNull property="isBaid" prepend=",">
+		<![CDATA[
+                    is_baid = #isBaid#
+		]]>
+			</isNotNull>
+			<isNotNull property="zoneId" prepend=",">
+		<![CDATA[
+                    zone_id = #zoneId#
+		]]>
+			</isNotNull>
+			<isNotNull property="createTime" prepend=",">
+		<![CDATA[
+                    create_time = #createTime#
+		]]>
+			</isNotNull>
+		</dynamic>
+		where id = #id#
+	</update>
+
+	<delete id="removeAppZone" parameterClass="AppZone">
+        <![CDATA[
+            DELETE FROM $tableName$
+        ]]>
+		where id = #id#
+	</delete>
+
+	<select id="countAppZone" resultClass="long" parameterClass="AppZone">
+  		<![CDATA[
+            SELECT count(*) FROM $tableName$
+        ]]>
+		<include refid="whereConditionAppZone" />
+	</select>
+</sqlMap>

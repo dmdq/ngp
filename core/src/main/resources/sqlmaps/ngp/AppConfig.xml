@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="AppConfigSQL">
+    
+    <typeAlias alias="AppConfig" type="com.ngnsoft.ngp.model.AppConfig"/>
+    <typeAlias alias="AppConfigBase" type="com.ngnsoft.ngp.model.AppConfigBase"/>
+    <typeAlias alias="App" type="com.ngnsoft.ngp.model.App"/>
+    
+    <resultMap id="rm_AppConfig" class="AppConfig">
+        <result property="appId" column="app_id"/>
+        <result property="appName" column="app_name"/>
+        <result property="jsonAll" column="json_all"/>
+    </resultMap>
+    
+    <resultMap id="rm_appConfig_with_app" class="AppConfig" extends="rm_AppConfig" >
+        <result property="app" column="app_id" select="find_app_by_appConfig"/>
+    </resultMap>
+    
+    <resultMap id="rm_app_base" class="App">
+        <result property="id"/>
+        <result property="name"/>
+        <result property="baseId" column="base_id"/>
+        <result property="baseName" column="base_name"/>
+        <result property="url"/>
+        <result property="iconUrn" column="icon_urn"/>
+        <result property="status"/>
+        <result property="statusDesc" column="status_desc"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    
+    <insert id="saveAppConfig" parameterClass="AppConfig">
+        <![CDATA[
+            INSERT INTO $tableName$ (app_id, app_name, json_all) 
+            VALUES (#appId#, #appName#, #jsonAll#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionAppConfig">
+        <dynamic prepend="WHERE">
+            <isNotNull property="appId" prepend="OR">
+				<![CDATA[
+		                    app_id like '%$appId$%'
+				]]>
+            </isNotNull>
+            <isNotNull property="appName" prepend="OR">
+				<![CDATA[
+		                    app_name like '%$appName$%'
+				]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findAppConfig" parameterClass="AppConfig" resultMap="rm_AppConfig">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionAppConfig"/>
+    </select>
+    
+    <select id="find_appConfig_with_app" parameterClass="AppConfig" resultMap="rm_appConfig_with_app">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionAppConfig"/>
+    </select>
+    
+    <select id="find_app_by_appConfig" resultMap="rm_app_base">
+        <![CDATA[
+            SELECT a.* FROM app a WHERE a.id = #value#
+        ]]>
+    </select>
+    
+    <select id="countAppConfig" resultClass="long" parameterClass="AppConfig">
+  		<![CDATA[
+            SELECT count(*) FROM $tableName$
+        ]]>
+        <include refid="whereConditionAppConfig"/>
+  	</select>
+    
+    <update id="updateAppConfig" parameterClass="AppConfig">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="jsonAll" prepend=",">
+		<![CDATA[
+                    json_all = #jsonAll#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where app_id = #appId#
+    </update>
+    
+    <delete id="removeAppConfig" parameterClass="AppConfig">
+        <![CDATA[
+            DELETE FROM $tableName$
+        ]]>
+        <include refid="whereConditionAppConfig"/>
+    </delete>
+    
+
+</sqlMap>

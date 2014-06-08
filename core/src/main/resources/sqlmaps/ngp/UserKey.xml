@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="UserKeySQL">
+    
+    <typeAlias alias="UserKey" type="com.ngnsoft.ngp.model.UserKey"/>
+    
+    <typeAlias alias="Device" type="com.ngnsoft.ngp.model.Device"/>
+    
+    <resultMap id="rm_UserKey" class="UserKey">
+        <result property="id"/>
+        <result property="userKey" column="user_key"/>
+        <result property="userId" column="user_id"/>
+        <result property="keyType" column="key_type"/>
+        <result property="keyFrom" column="key_from"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    
+    <insert id="saveUserKey" parameterClass="UserKey">
+        <![CDATA[
+            INSERT INTO $tableName$ (user_key, user_id, key_type, key_from, update_time) 
+            VALUES (#userKey#, #userId#, #keyType#, #keyFrom#, #updateTime#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionUserKey">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="userKey" prepend="AND">
+		<![CDATA[
+                    user_key = #userKey#
+		]]>
+            </isNotNull>
+            <isNotNull property="userId" prepend="AND">
+		<![CDATA[
+                    user_id = #userId#
+		]]>
+            </isNotNull>
+            <isNotNull property="keyType" prepend="AND">
+		<![CDATA[
+                    key_type = #keyType#
+		]]>
+            </isNotNull>
+            <isNotNull property="keyFrom" prepend="AND">
+		<![CDATA[
+                    key_from = #keyFrom#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findUserKey" parameterClass="UserKey" resultMap="rm_UserKey">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionUserKey"/>
+    </select>
+    
+    <select id="find_userkey_by_device_or" parameterClass="Device" resultClass="java.util.HashMap">
+        <![CDATA[
+            SELECT d.id as device_id, d.mac_id as mac_id, d.idfa as idfa, uk.id as uk_id, uk.user_id as user_id FROM device d left join user_key uk on d.id=uk.user_key 
+            WHERE (uk.key_type = 'device' or uk.key_type is NULL) 
+        ]]>
+        <dynamic prepend="AND (">
+            <isNotNull property="idfa" prepend="OR">
+		<![CDATA[
+                    d.idfa = #idfa#
+		]]>
+            </isNotNull>
+            <isNotNull property="macId" prepend="OR">
+		<![CDATA[
+                    d.mac_id = #macId#
+		]]>
+            </isNotNull>
+        </dynamic>
+      <![CDATA[
+        ) order by create_time asc
+      ]]>
+    </select>
+    
+    <update id="updateUserKey" parameterClass="UserKey">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="userId" prepend=",">
+		<![CDATA[
+                    user_id = #userId#
+		]]>
+            </isNotNull>
+            <isNotNull property="keyFrom" prepend=",">
+		<![CDATA[
+                    key_from = #keyFrom#
+		]]>
+            </isNotNull>
+            <isNotNull property="updateTime" prepend=",">
+		<![CDATA[
+                    update_time = #updateTime#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where id = #id#
+    </update>
+    
+    <delete id="removeUserKey" parameterClass="UserKey">
+        <![CDATA[
+            DELETE FROM $tableName$
+        ]]>
+        <include refid="whereConditionUserKey"/>
+    </delete>
+
+</sqlMap>

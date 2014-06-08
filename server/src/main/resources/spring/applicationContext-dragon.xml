@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+            http://www.springframework.org/schema/tx
+            http://www.springframework.org/schema/tx/spring-tx-3.2.xsd"
+       default-lazy-init="true">
+
+    <bean id="APP_100001" class="com.ngnsoft.ngp.component.dragon.DragonComponent"/>
+    
+    <bean id="dragonManager" class="com.ngnsoft.ngp.component.dragon.service.impl.DragonManagerImpl"/>
+    
+     <bean name="dragonDataJob" class="com.ngnsoft.ngp.component.dragon.DragonDataJob"/>
+    
+    <bean id="dragonDataSource" class="org.logicalcobwebs.proxool.ProxoolDataSource">
+		<property name="driver" value="${jdbc.driverClassName}" />
+		<property name="driverUrl" value="${dragon.jdbc.url}" />
+   		<property name="user" value="${dragon.jdbc.username}" />
+   		<property name="password" value="${dragon.jdbc.password}" />
+   		<property name="alias" value="${dragon.datasource.proxool.alias}" />
+		<property name="prototypeCount" value="${dragon.datasource.proxool.prototypeCount}" />
+		<property name="maximumConnectionCount" value="${dragon.datasource.proxool.maximumConnectionCount}" />
+		<property name="minimumConnectionCount" value="${dragon.datasource.proxool.minimumConnectionCount}" />
+                
+                <property name="maximumActiveTime" value="${datasource.proxool.maximumActiveTime}" />
+<!--                <property name="houseKeepingSleepTime" value="${datasource.proxool.houseKeepingSleepTime}" />-->
+		<property name="houseKeepingTestSql" value="${datasource.proxool.houseKeepingTestSql}" />
+		<property name="testAfterUse" value="${datasource.proxool.testAfterUse}" />
+		<property name="testBeforeUse" value="${datasource.proxool.testBeforeUse}" />
+		<property name="trace" value="${datasource.proxool.trace}"/>
+		<property name="verbose" value="${datasource.proxool.verbose}" />
+	</bean>
+    
+    <bean id="dragonSqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocations">
+        	<list>
+        		<value>classpath:/sql-dragon-config.xml</value>
+        		<value>classpath:/sql-ngp-config.xml</value>
+        	</list>
+        </property>
+        <property name="dataSource" ref="dragonDataSource"/>
+        <property name="lobHandler" ref="lobHandler"/>
+    </bean>
+    
+    <bean id="dragonTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dragonDataSource"/>
+    </bean>
+    
+    <tx:annotation-driven transaction-manager="dragonTransactionManager"/>
+
+</beans>

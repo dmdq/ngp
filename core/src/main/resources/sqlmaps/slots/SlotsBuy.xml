@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="SlotsBuySQL">
+    
+    <typeAlias alias="SlotsBuy" type="com.ngnsoft.ngp.component.slots.model.SlotsBuy"/>
+    
+    <resultMap id="rm_SlotsBuy" class="SlotsBuy">
+    	<result property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="nick" column="nick"/>
+        <result property="productId" column="product_id"/>
+        <result property="level" column="level"/>
+        <result property="coins" column="coins"/>
+        <result property="rank" column="rank"/>
+        <result property="appId" column="app_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="bundleId" column="bundle_id"/>
+    </resultMap>
+    
+    <insert id="saveSlotsBuy" parameterClass="SlotsBuy">
+        <![CDATA[
+            INSERT INTO $tableName$ (user_id, nick, product_id, level, coins, rank, create_time, app_id, bundle_id) 
+            VALUES (#userId#, #nick#, #productId#, #level#, #coins#, #rank#, #createTime#, #appId#, #bundleId#)
+        ]]>
+    </insert>
+    
+    <select id="find_slotsBuy_by_time_and_appId" parameterClass="map" resultClass="java.util.HashMap">
+        <![CDATA[
+           SELECT sb.user_id as userId, sb.nick, sb.product_id as pid, sb.level, sb.coins, 
+				sb.rank, sb.create_time as buyTime, sp.amount, sd.create_time as createTime,
+				tem.count as count, sb.bundleId FROM slots_buy sb
+			 INNER JOIN slots_product sp ON sb.product_id = sp.product_id 
+			 INNER JOIN slots_data sd ON sb.user_id = sd.user_id
+			 INNER join (SELECT count(1) as count, user_id from slots_buy group by user_id) as tem on sb.user_id = tem.user_id
+			WHERE DATE_FORMAT(sb.create_time ,"%Y/%m/%d") between #startTime# and #endTime# 
+        ]]>
+        <isNotNull property="appId" prepend="AND">
+        	sb.app_id = #appId#
+        </isNotNull>
+        <isNotNull property="userId" prepend="AND">
+        	sb.user_id = #userId#
+        </isNotNull>
+        ORDER BY sb.create_time DESC
+    </select>
+    
+    <select id="count_slotsBuy_by_time" parameterClass="map" resultClass="long">
+        <![CDATA[
+            SELECT count(1) FROM slots_buy sb 
+            INNER join slots_product sp on sb.product_id = sp.product_id 
+            where DATE_FORMAT(sb.create_time ,"%Y/%m/%d") between #startTime# and #endTime# 
+        ]]>
+        <isNotNull property="appId" prepend="AND">
+        	sb.app_id = #appId#
+        </isNotNull>
+        <isNotNull property="userId" prepend="AND">
+        	sb.user_id = #userId#
+        </isNotNull>
+    </select>
+    
+    <select id="count_slotsBuy_by_population" parameterClass="map" resultClass="long">
+        <![CDATA[
+            SELECT count(1) FROM (SELECT count(1) FROM slots_buy sb join slots_product sp on sb.product_id = sp.product_id where DATE_FORMAT(sb.create_time ,"%Y/%m/%d") between #startTime# and #endTime# 
+        ]]>
+        <isNotNull property="appId" prepend="AND">
+        	sb.app_id = #appId#
+        </isNotNull>
+        <isNotNull property="userId" prepend="AND">
+        	sb.user_id = #userId#
+        </isNotNull>
+        GROUP BY sb.user_id) as a
+    </select>
+    
+    <select id="sum_slotsBuy_by_time_and_appId" parameterClass="map" resultClass="java.util.HashMap">
+        <![CDATA[
+            SELECT SUM(sp.amount) as amount FROM slots_buy sb join slots_product sp on sb.product_id = sp.product_id 
+ 			where DATE_FORMAT(sb.create_time ,"%Y/%m/%d") between #startTime# and #endTime# 
+        ]]>
+        <isNotNull property="appId" prepend="AND">
+        	sb.app_id = #appId#
+        </isNotNull>
+        <isNotNull property="userId" prepend="AND">
+        	sb.user_id = #userId#
+        </isNotNull>
+    </select>
+    
+    <select id="sum_slotsBuy" parameterClass="SlotsBuy" resultClass="java.util.HashMap">
+        <![CDATA[
+            SELECT SUM(sp.amount) as amount FROM slots_buy sb join slots_product sp on sb.product_id = sp.product_id
+        ]]>
+    </select>
+    
+    <!-- <sql id="whereConditionSlotsBuy">
+        <dynamic prepend="WHERE">
+        	<isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="period" prepend="AND">
+		<![CDATA[
+                    period = #period#
+		]]>
+            </isNotNull>
+            <isNotNull property="curUnit" prepend="AND">
+		<![CDATA[
+                    cur_unit = #curUnit#
+		]]>
+            </isNotNull>
+            <isNotNull property="nextUnit" prepend="AND">
+		<![CDATA[
+                    next_unit = #nextUnit#
+		]]>
+            </isNotNull>
+            <isNotNull property="curTotalHours" prepend="AND">
+		<![CDATA[
+                    cur_total_hours = #curTotalHours#
+		]]>
+            </isNotNull>
+            <isNotNull property="curStatus" prepend="AND">
+		<![CDATA[
+                    cur_status = #curStatus#
+		]]>
+            </isNotNull>
+            <isNotNull property="curType" prepend="AND">
+		<![CDATA[
+                    cur_type = #curType#
+		]]>
+            </isNotNull>
+            <isNotNull property="nextType" prepend="AND">
+		<![CDATA[
+                    next_type = #nextType#
+		]]>
+            </isNotNull>
+            <isNotNull property="nextStatus" prepend="AND">
+		<![CDATA[
+                    next_status = #nextStatus#
+		]]>
+            </isNotNull>
+            <isNotNull property="nextTotalHours" prepend="AND">
+		<![CDATA[
+                    next_total_hours = #nextTotalHours#
+		]]>
+            </isNotNull>
+            <isNotNull property="lastType" prepend="AND">
+		<![CDATA[
+                    last_type = #lastType#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findSlotsBuy" parameterClass="SlotsBuy" resultMap="rm_SlotsBuy">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionSlotsBuy"/>
+    </select>
+    
+    <delete id="removeSlotsBuy" parameterClass="SlotsBuy">
+        <![CDATA[
+            DELETE FROM $tableName$
+        ]]>
+        <include refid="whereConditionSlotsBuy"/>
+    </delete>
+    
+    <update id="updateSlotsBuy" parameterClass="SlotsBuy">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+        	<isNotNull property="period" prepend=",">
+		<![CDATA[
+                    period = #period#
+		]]>
+            </isNotNull>
+            <isNotNull property="curUnit" prepend=",">
+		<![CDATA[
+                    cur_unit = #curUnit#
+		]]>
+            </isNotNull>
+            <isNotNull property="nextUnit" prepend=",">
+		<![CDATA[
+                    next_unit = #nextUnit#
+		]]>
+            </isNotNull>
+            <isNotNull property="curTotalHours" prepend=",">
+		<![CDATA[
+                    cur_total_hours = #curTotalHours#
+		]]>
+            </isNotNull>
+            <isNotNull property="nextTotalHours" prepend=",">
+		<![CDATA[
+                    next_total_hours = #nextTotalHours#
+		]]>
+            </isNotNull>
+            <isNotNull property="refreshStartTime" prepend=",">
+		<![CDATA[
+                    refresh_start_time = #refreshStartTime#
+		]]>
+            </isNotNull>
+            <isNotNull property="bakStartTime" prepend=",">
+		<![CDATA[
+                    bak_start_time = #bakStartTime#
+		]]>
+            </isNotNull>
+            <isNotNull property="curStatus" prepend=",">
+		<![CDATA[
+                    cur_status = #curStatus#
+		]]>
+            </isNotNull>
+            <isNotNull property="curType" prepend=",">
+		<![CDATA[
+                    cur_type = #curType#
+		]]>
+            </isNotNull>
+            <isNotNull property="nextType" prepend=",">
+		<![CDATA[
+                    next_type = #nextType#
+		]]>
+            </isNotNull>
+            <isNotNull property="nextStatus" prepend=",">
+		<![CDATA[
+                    next_status = #nextStatus#
+		]]>
+            </isNotNull>
+            <isNotNull property="updateTime" prepend=",">
+		<![CDATA[
+                    update_time = #updateTime#
+		]]>
+            </isNotNull>
+            <isNotNull property="lastType" prepend=",">
+		<![CDATA[
+                    last_type = #lastType#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where id = #id#
+    </update> -->
+    
+</sqlMap>

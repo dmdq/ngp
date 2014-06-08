@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="PopularizeCountSQL">
+    
+    <typeAlias alias="PopularizeCount" type="com.ngnsoft.ngp.component.candy.model.PopularizeCount"/>
+    
+    <resultMap id="rm_PopularizeCount" class="PopularizeCount">
+    	<result property="id" column="id"/>
+    	<result property="type" column="type"/>
+        <result property="deviceId" column="device_id"/>
+        <result property="i1" column="i1"/>
+        <result property="i2" column="i2"/>
+        <result property="i3" column="i3"/>
+        <result property="i4" column="i4"/>
+        <result property="i5" column="i5"/>
+        <result property="i6" column="i6"/>
+        <result property="i7" column="i7"/>
+        <result property="i8" column="i8"/>
+        <result property="i9" column="i9"/>
+        <result property="i10" column="i10"/>
+        <result property="s1" column="s1"/>
+        <result property="s2" column="s2"/>
+        <result property="s3" column="s3"/>
+        <result property="s4" column="s4"/>
+        <result property="s5" column="s5"/>
+        <result property="s6" column="s6"/>
+        <result property="s7" column="s7"/>
+        <result property="s8" column="s8"/>
+        <result property="s9" column="s9"/>
+        <result property="s10" column="s10"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+    
+    <insert id="savePopularizeCount" parameterClass="PopularizeCount">
+        <![CDATA[
+            INSERT INTO $tableName$ (type, device_id, i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, create_time) 
+            VALUES (#type#, #deviceId#, #i1#, #i2#, #i3#, #i4#, #i5#, #i6#, #i7#, #i8#, #i9#, #i10#, #s1#, #s2#, #s3#, #s4#, #s5#, #s6#, #s7#, #s8#, #s9#, #s10#, #createTime#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionPopularizeCount">
+        <dynamic prepend="WHERE">
+        	<isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findPopularizeCount" parameterClass="PopularizeCount" resultMap="rm_PopularizeCount">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionPopularizeCount"/>
+    </select>
+    
+    <delete id="removePopularizeCount" parameterClass="PopularizeCount">
+        <![CDATA[
+            DELETE FROM $tableName$
+        ]]>
+        <include refid="whereConditionPopularizeCount"/>
+    </delete>
+    
+    <!-- <update id="updatePopularizeCount" parameterClass="PopularizeCount">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+        	<isNotNull property="period" prepend=",">
+		<![CDATA[
+                    period = #period#
+		]]>
+            </isNotNull>
+            <isNotNull property="curUnit" prepend=",">
+		<![CDATA[
+                    cur_unit = #curUnit#
+		]]>
+            </isNotNull>
+            <isNotNull property="nextUnit" prepend=",">
+		<![CDATA[
+                    next_unit = #nextUnit#
+		]]>
+            </isNotNull>
+            <isNotNull property="curTotalHours" prepend=",">
+		<![CDATA[
+                    cur_total_hours = #curTotalHours#
+		]]>
+            </isNotNull>
+            <isNotNull property="nextTotalHours" prepend=",">
+		<![CDATA[
+                    next_total_hours = #nextTotalHours#
+		]]>
+            </isNotNull>
+            <isNotNull property="refreshStartTime" prepend=",">
+		<![CDATA[
+                    refresh_start_time = #refreshStartTime#
+		]]>
+            </isNotNull>
+            <isNotNull property="bakStartTime" prepend=",">
+		<![CDATA[
+                    bak_start_time = #bakStartTime#
+		]]>
+            </isNotNull>
+            <isNotNull property="curStatus" prepend=",">
+		<![CDATA[
+                    cur_status = #curStatus#
+		]]>
+            </isNotNull>
+            <isNotNull property="curType" prepend="AND">
+		<![CDATA[
+                    cur_type = #curType#
+		]]>
+            </isNotNull>
+            <isNotNull property="nextType" prepend="AND">
+		<![CDATA[
+                    next_type = #nextType#
+		]]>
+            </isNotNull>
+            <isNotNull property="nextStatus" prepend=",">
+		<![CDATA[
+                    next_status = #nextStatus#
+		]]>
+            </isNotNull>
+            <isNotNull property="updateTime" prepend=",">
+		<![CDATA[
+                    update_time = #updateTime#
+		]]>
+            </isNotNull>
+            <isNotNull property="lastType" prepend=",">
+		<![CDATA[
+                    last_type = #lastType#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where id = #id#
+    </update> -->
+    
+</sqlMap>

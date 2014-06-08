@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="PushTokenSQL">
+    
+    <typeAlias alias="PushToken" type="com.ngnsoft.ngp.model.PushToken"/>
+    
+    <resultMap id="rm_PushToken" class="PushToken">  
+        <result property="id"/>
+        <result property="appId" column="app_id"/>
+        <result property="deviceId" column="device_id"/>
+        <result property="OS" column="OS"/>
+        <result property="token" column="token"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+    
+    <insert id="savePushToken" parameterClass="PushToken">
+        <![CDATA[
+            INSERT INTO $tableName$ (app_id, device_id, OS, token, create_time) 
+            VALUES (#appId#, #deviceId#, #OS#, #token#, #createTime#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionPushToken">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="appId" prepend="AND">
+		<![CDATA[
+                    app_id = #appId#
+		]]>
+            </isNotNull>
+            <isNotNull property="deviceId" prepend="AND">
+		<![CDATA[
+                    device_id = #deviceId#
+		]]>
+            </isNotNull>
+            <isNotNull property="OS" prepend="AND">
+		<![CDATA[
+                    OS = #OS#
+		]]>
+            </isNotNull>
+            <isNotNull property="token" prepend="AND">
+		<![CDATA[
+                    token = #token#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findPushToken" parameterClass="PushToken" resultMap="rm_PushToken">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionPushToken"/>
+    </select>
+    
+    <delete id="removePushToken" parameterClass="PushToken">
+        <![CDATA[
+            DELETE FROM $tableName$
+        ]]>
+        <include refid="whereConditionPushToken"/>
+    </delete>
+
+</sqlMap>

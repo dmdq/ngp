@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="SnsFriendSQL">
+    
+    <typeAlias alias="SnsFriend" type="com.ngnsoft.ngp.model.SnsFriend"/>
+    
+    <resultMap id="rm_SnsFriend" class="SnsFriend">  
+        <result property="id"/>
+        <result property="faUid" column="fa_uid"/>
+        <result property="fbUk" column="fb_uk"/>
+        <result property="fbKt" column="fb_kt"/>
+        <result property="fbUid" column="fb_uid"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    
+    <insert id="saveSnsFriend" parameterClass="SnsFriend">
+        <![CDATA[
+            INSERT INTO $tableName$ (fa_uid, fb_uk, fb_kt, fb_uid, create_time, update_time) 
+            VALUES (#faUid#, #fbUk#, #fbKt#, #fbUid#, #createTime#, #updateTime#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionSnsFriend">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+        </dynamic>
+        <dynamic prepend="WHERE">
+            <isNotNull property="faUid" prepend="AND">
+		<![CDATA[
+                    fa_uid = #faUid#
+		]]>
+            </isNotNull>
+        </dynamic>
+        <dynamic prepend="WHERE">
+            <isNotNull property="fbKt" prepend="AND">
+		<![CDATA[
+                    fb_kt = #fbKt#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findSnsFriend" parameterClass="SnsFriend" resultMap="rm_SnsFriend">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionSnsFriend"/>
+    </select>
+    
+    <select id="find_snsFriends_join_userAppData_by_map" parameterClass="map" resultMap="rm_SnsFriend">
+        <![CDATA[
+            SELECT sf.* FROM sns_friend as sf
+            inner join user_app_data uad on uad.user_id = sf.fb_uid
+            where sf.fb_uid = #userId# and  sf.fb_kt = #sns# and uad.baid = #baid#
+        ]]>
+    </select>
+    
+    <select id="count_snsFriends_join_userAppData_by_map" parameterClass="map" resultClass="long">
+        <![CDATA[
+            SELECT count(*) FROM sns_friend as sf
+            inner join user_app_data uad on uad.user_id = sf.fb_uid
+            where sf.fb_uid = #userId# and  sf.fb_kt = #sns# and uad.baid = #baid#
+        ]]>
+    </select>
+    
+    <select id="find_snsFriends_join_userData_by_map" parameterClass="map" resultMap="rm_SnsFriend">
+        <![CDATA[
+            SELECT sf.* FROM sns_friend as sf
+            where sf.fb_uid = #userId# and  sf.fb_kt = #sns# 
+        ]]>
+    </select>
+    
+    <select id="count_snsFriends_join_userData_by_map" parameterClass="map" resultClass="long">
+        <![CDATA[
+            SELECT count(*) FROM sns_friend as sf
+            where sf.fa_uid = #userId# and sf.fb_kt = #sns#
+        ]]>
+    </select>
+    
+    <select id="find_snsFriends_by_fa_or_fb" parameterClass="map" resultMap="rm_SnsFriend">
+        <![CDATA[
+            SELECT * FROM sns_friend
+            where fa_uid = #userId# and fb_uk = #snsId# and fb_kt = #type#
+        ]]>
+    </select>
+    
+    <update id="updateSnsFriend" parameterClass="SnsFriend">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="faUid" prepend=",">
+		<![CDATA[
+                    fa_uid = #faUid#
+		]]>
+            </isNotNull>
+            <isNotNull property="fbUk" prepend=",">
+		<![CDATA[
+                    fb_uk = #fbUk#
+		]]>
+            </isNotNull>
+            <isNotNull property="fbKt" prepend=",">
+		<![CDATA[
+                    fb_kt = #fbKt#
+		]]>
+            </isNotNull>
+            <isNotNull property="fbUid" prepend=",">
+		<![CDATA[
+                    fb_uid = #fbUid#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where id = #id#
+    </update>
+    
+    <delete id="remove_snsFriend_by_map" parameterClass="map">
+        <![CDATA[
+            DELETE FROM sns_friend where fa_uid = #userId# and fb_uk = #friendId# and fb_kt = #type#
+        ]]>
+    </delete>
+    
+</sqlMap>

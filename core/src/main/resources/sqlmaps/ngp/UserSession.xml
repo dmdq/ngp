@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="UserSessionSQL">
+    
+    <typeAlias alias="UserSession" type="com.ngnsoft.ngp.model.UserSession"/>
+    
+    <resultMap id="rm_UserSession" class="UserSession">  
+        <result property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="appId" column="app_id"/>
+        <result property="appVersion" column="app_version"/>
+        <result property="deviceId" column="device_id"/>
+        <result property="engineId" column="engine_id"/>
+        <result property="status"/>
+        <result property="ip"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    
+    <insert id="saveUserSession" parameterClass="UserSession">
+        <![CDATA[
+            INSERT INTO $tableName$ (id, user_id, app_id, app_version, device_id, engine_id, status, ip, create_time, update_time) 
+            VALUES (#id#, #userId#, #appId#, #appVersion#, #deviceId#, #engineId#, #status#, #ip#, #createTime#, #updateTime#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionUserSession">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="userId" prepend="AND">
+		<![CDATA[
+                    user_id = #userId#
+		]]>
+            </isNotNull>
+            <isNotNull property="engineId" prepend="AND">
+		<![CDATA[
+                    engine_id = #engineId#
+		]]>
+            </isNotNull>
+            <isNotNull property="status" prepend="AND">
+		<![CDATA[
+                    status = #status#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findUserSession" parameterClass="UserSession" resultMap="rm_UserSession">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionUserSession"/>
+    </select>
+
+	<select id="find_user_session_by_userid_and_appid_and_status" parameterClass="map" resultMap="rm_UserSession">
+        <![CDATA[
+            SELECT * FROM user_session WHERE status = 0 and user_id = $userId$ and 
+        ]]>
+        <isNotEmpty property="rangeList">
+           app_id in 
+           <include refid="Example_In_List_Clause" />
+        </isNotEmpty>
+    </select>
+    
+    <delete id="removeUserSession" parameterClass="UserSession">
+        <![CDATA[
+            DELETE FROM $tableName$
+        ]]>
+        <include refid="whereConditionUserSession"/>
+    </delete>
+    
+    <update id="updateUserSession" parameterClass="UserSession">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="status" prepend=",">
+		<![CDATA[
+                    status = #status#
+		]]>
+            </isNotNull>
+            <isNotNull property="updateTime" prepend=",">
+		<![CDATA[
+                    update_time = #updateTime#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where id = #id#
+    </update>
+	
+</sqlMap>

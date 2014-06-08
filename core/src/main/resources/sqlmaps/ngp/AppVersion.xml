@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="AppVersionSQL">
+    
+    <typeAlias alias="AppVersion" type="com.ngnsoft.ngp.model.AppVersion"/>
+    
+    <resultMap id="rm_AppVersion" class="AppVersion">  
+        <result property="id"/>
+        <result property="appId" column="app_id"/>
+        <result property="version"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+    
+     <insert id="saveAppVersion" parameterClass="AppVersion">
+        <![CDATA[
+            INSERT INTO $tableName$ (app_id, version, create_time) 
+            VALUES (#appId#, #version#, #createTime#)
+        ]]>
+        <selectKey resultClass="java.lang.Long" keyProperty="id" type="post">
+            select last_insert_id();
+        </selectKey>
+    </insert>
+    
+    <sql id="whereConditionAppVersion">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="appId" prepend="AND">
+		<![CDATA[
+                    app_id = #appId#
+		]]>
+            </isNotNull>
+            <isNotNull property="version" prepend="AND">
+		<![CDATA[
+                    version = #version#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findAppVersion" parameterClass="AppVersion" resultMap="rm_AppVersion">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionAppVersion"/>
+    </select>
+    
+    <select id="countAppVersion" parameterClass="AppVersion" resultClass="long">
+        <![CDATA[
+            SELECT count(*) FROM $tableName$
+        ]]>
+        <include refid="whereConditionAppVersion"/>
+    </select>
+	
+	<update id="updateAppVersion" parameterClass="AppVersion">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="version" prepend=",">
+		<![CDATA[
+                    version = #version#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where id = #id#
+    </update>
+	
+	<delete id="removeAppVersion" parameterClass="AppVersion">
+        <![CDATA[
+            DELETE FROM $tableName$
+        ]]>
+        <include refid="whereConditionAppVersion"/>
+    </delete>
+	
+</sqlMap>

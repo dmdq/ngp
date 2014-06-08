@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="PaypalIndentSQL">
+    
+    <typeAlias alias="PaypalIndent" type="com.ngnsoft.ngp.model.PaypalIndent"/>
+    
+    <resultMap id="rm_PaypalIndent" class="PaypalIndent">
+        <result property="id"/>
+        <result property="totalAmount" column="total_amount"/>
+        <result property="quantity"  column="quantity"/>
+        <result property="custom" column="custom"/>
+        <result property="itemName" column="item_name"/>
+        <result property="jsonData" column="json_data"/>
+        <result property="payerEmail" column="payer_email"/>
+        <result property="payerId" column="payer_id"/>
+        <result property="paymentData" column="payment_date"/>
+        <result property="paymentDateMs" column="payment_date_ms"/>
+        <result property="token" column="token"/>
+        <result property="receiverEmail" column="receiver_email"/>
+    </resultMap>
+    
+    <insert id="savePaypalIndent" parameterClass="PaypalIndent">
+        <![CDATA[
+            INSERT INTO $tableName$ (total_amount, quantity, custom, item_name, json_data, payer_email, payer_id, payment_date
+            , payment_date_ms, token, receiver_email) 
+            VALUES (#totalAmount#, #quantity#, #custom#, #itemName#, #jsonData#, #payerEmail#, #payerId#, #paymentData#
+            , #paymentDateMs#, #token#, #receiverEmail#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionPaypalIndent">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="payerId" prepend="AND">
+		<![CDATA[
+                    payer_id = #payerId#
+		]]>
+            </isNotNull>
+            <isNotNull property="token" prepend="AND">
+		<![CDATA[
+                    token = #token#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findPaypalIndent" parameterClass="PaypalIndent" resultMap="rm_PaypalIndent">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionPaypalIndent"/>
+    </select>
+
+</sqlMap>

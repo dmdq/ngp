@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//ibatis.apache.org//DTD SQL Map Config 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>
+    <settings enhancementEnabled="true" maxTransactions="1024"
+        maxRequests="2048" maxSessions="512"/>
+    
+    <typeHandler jdbcType="BLOB" javaType ="byte" callback="org.springframework.orm.ibatis.support.BlobByteArrayTypeHandler"/>
+    <typeHandler jdbcType="CLOB" javaType="java.lang.String" callback="org.springframework.orm.ibatis.support.ClobStringTypeHandler"/>
+    
+    <sqlMap resource="sqlmaps/slots/SlotsData.xml"/>
+    <sqlMap resource="sqlmaps/slots/SlotsIntegralHistory.xml"/>
+    <sqlMap resource="sqlmaps/slots/Event.xml"/>
+    <sqlMap resource="sqlmaps/slots/SlotsKeep.xml"/>
+    <sqlMap resource="sqlmaps/slots/SlotsProduct.xml"/>
+    <sqlMap resource="sqlmaps/slots/DataCount.xml"/>
+    <sqlMap resource="sqlmaps/slots/SlotsBuy.xml"/>
+    
+</sqlMapConfig>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="PromoCountSQL">
+    
+    <typeAlias alias="PromoCount" type="com.ngnsoft.ngp.model.PromoCount"/>
+    
+    <resultMap id="rm_PromoCount" class="PromoCount">
+        <result property="id"/>
+        <result property="promoId" column="promo_id"/>
+        <result property="clickCount" column="click_count"/>
+        <result property="countDate" column="count_date"/>
+    </resultMap>
+    
+    <insert id="savePromoCount" parameterClass="PromoCount">
+        <![CDATA[
+            INSERT INTO $tableName$ (id, promo_id, click_count, count_date) 
+            VALUES (#id#, #promoId#, #clickCount#, #countDate#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionPromoCount">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="promoId" prepend="AND">
+		<![CDATA[
+                    promo_id = #promoId#
+		]]>
+            </isNotNull>
+            <isNotNull property="countDate" prepend="AND">
+		<![CDATA[
+                    count_date = #countDate#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findPromoCount" parameterClass="PromoCount" resultMap="rm_PromoCount">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionPromoCount"/>
+    </select>
+    
+    <select id="find_last_count_date" resultMap="rm_PromoCount">
+        <![CDATA[
+            SELECT * FROM promo_count order by id desc limit 1
+        ]]>
+    </select>
+    
+    <select id="countPromoCount" parameterClass="PromoCount" resultClass="long">
+        <![CDATA[
+            SELECT count(*) FROM $tableName$
+        ]]>
+        <include refid="whereConditionPromoCount"/>
+    </select>
+
+</sqlMap>

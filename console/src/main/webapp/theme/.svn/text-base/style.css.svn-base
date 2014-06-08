@@ -1,0 +1,13 @@
+@charset "UTF-8";
+/* CSS Document */
+/*basic*/
+body{height:100%;background:#fff;}
+body,div,dl,dt,dd,ul,ol,li,h1,h1 *,h2,h3,h4,h5,h6,pre,form,fieldset,input,button,select,option,textarea,p,blockquote,th,td{padding:0;margin:0;font:12px/20px Arial, Helvetica, sans-serif;word-break:break-all;word-wrap:break-word;}
+table{border-collapse:collapse;border-spacing:0;}
+img{border:0;}
+ol,ul,li{list-style:none;}
+h1{text-align: center; font: bold 22px/ 30px 黑体, sans-serif; margin: 10px 0 10px 10px;}
+h2{text-align: center; font: bold 14px/ 30px 宋体, sans-serif; margin: 10px 0 10px 0;}
+.op-sp{margin-left: 4px; margin-right: 4px; color:#a52410; font:bold;}
+.btn-container{width:800px; margin: 10px 0}
+.whitetext{color: white;}

@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="IosOrderSQL">
+    
+    <typeAlias alias="IosOrder" type="com.ngnsoft.ngp.model.IosOrder"/>
+    
+    <resultMap id="rm_iosOrder_base" class="IosOrder">
+    	<result property="id" column="id"/>
+    	<result property="productId" column="product_id"/>
+    	<result property="itemId" column="item_id"/>
+    	<result property="quantity" column="quantity"/>
+    	<result property="bid" column="bid"/>
+    	<result property="bvrs" column="bvrs"/>
+    	<result property="purchaseDate" column="purchase_date"/>
+    	<result property="jsonData" column="json_data"/>
+        <result property="appId" column="app_id"/>
+        <result property="originalPurchasesDateMs" column="original_purchases_date_ms"/>
+        <result property="originalPurchasesDatePst" column="original_purchases_date_pst"/>
+        <result property="originalTransactionId" column="original_transaction_id"/>
+        <result property="transactionId" column="transaction_id"/>
+        <result property="uniquerIdetifier" column="unique_idetifier"/>
+        <result property="uniqueVendorIdentifier" column="unique_vendor_identifier"/>
+        <result property="purchaseDateMs" column="purchase_date_ms"/>
+        <result property="purchaseDatePst" column="purchase_date_pst"/>
+        <result property="userId" column="user_id"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+    
+    <insert id="saveIosOrder" parameterClass="IosOrder">
+        <![CDATA[
+            INSERT INTO $tableName$ (id, product_id, original_purchases_date_ms, original_purchases_date_pst, original_transaction_id, unique_idetifier, 
+            unique_vendor_identifier, purchase_date_ms, purchase_date_pst, transaction_id, item_id, quantity, bid, bvrs, purchase_date, json_data, app_id, user_id, create_time) 
+            VALUES (#id#, #productId#, #originalPurchasesDateMs#, #originalPurchasesDatePst#, #originalTransactionId#, 
+            #uniquerIdetifier#, #uniqueVendorIdentifier#, #purchaseDateMs#, #purchaseDatePst#, #transactionId#,#itemId#, #quantity#, #bid#, #bvrs#, #purchaseDate#, #jsonData#, #appId#, #userId#, #createTime#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionIosOrder">
+        <dynamic prepend="WHERE">
+       		<isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="transactionId" prepend="AND">
+		<![CDATA[
+                    transaction_id = #transactionId#
+		]]>
+            </isNotNull>
+         	<isNotNull property="productId" prepend="AND">
+		<![CDATA[
+                    product_id = #productId#
+		]]>
+            </isNotNull>
+            <isNotNull property="quantity" prepend="AND">
+		<![CDATA[
+                    quantity = #quantity#
+		]]>
+            </isNotNull>
+            <isNotNull property="appId" prepend="AND">
+		<![CDATA[
+                    app_id = #appId#
+		]]>
+            </isNotNull>
+            <isNotNull property="userId" prepend="AND">
+		<![CDATA[
+                    user_id = #userId#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findIosOrder" parameterClass="IosOrder" resultMap="rm_iosOrder_base">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionIosOrder"/>
+    </select>
+    
+    <select id="countIosOrder" parameterClass="IosOrder" resultClass="long">
+        <![CDATA[
+            SELECT count(1) FROM $tableName$
+        ]]>
+        <include refid="whereConditionIosOrder"/>
+    </select>
+    
+    <select id="find_iosOrder_by_time_and_appId" parameterClass="map" resultClass="java.util.HashMap">
+        <![CDATA[
+            SELECT io.user_id as userId,ud.nick,p.amount,ud.level,ud.gem,ud.trophy, tem.count,io.create_time as create_time,ud.create_time as create_time1 FROM coc_ios_order io 
+			INNER join coc_product p on io.product_id = p.product_id 
+			INNER join user_data ud on io.user_id = ud.user_id 
+			inner join (SELECT count(1) as count, user_id from coc_ios_order group by user_id) as tem on io.user_id = tem.user_id 
+			WHERE DATE_FORMAT(io.create_time ,"%Y/%m/%d") between #startTime# and #endTime# 
+        ]]>
+        <isNotNull property="appId" prepend="AND">
+        	io.app_id = #appId#
+        </isNotNull>
+        <isNotNull property="userId" prepend="AND">
+        	io.user_id = #userId#
+        </isNotNull>
+        ORDER BY io.create_time DESC
+    </select>
+    
+    <select id="count_iosOrder_by_time" parameterClass="map" resultClass="long">
+        <![CDATA[
+            SELECT count(1) FROM coc_ios_order where DATE_FORMAT(create_time ,"%Y/%m/%d") between #startTime# and #endTime#
+        ]]>
+        <isNotNull property="appId" prepend="AND">
+        	app_id = #appId#
+        </isNotNull>
+        <isNotNull property="userId" prepend="AND">
+        	user_id = #userId#
+        </isNotNull>
+    </select>
+    
+    <select id="count_iosOrder_by_population" parameterClass="map" resultClass="long">
+        <![CDATA[
+            SELECT count(1) FROM (SELECT count(1) FROM coc_ios_order where DATE_FORMAT(create_time ,"%Y/%m/%d") between #startTime# and #endTime# 
+        ]]>
+        <isNotNull property="appId" prepend="AND">
+        	app_id = #appId#
+        </isNotNull>
+        <isNotNull property="userId" prepend="AND">
+        	user_id = #userId#
+        </isNotNull>
+        GROUP BY user_id) as a
+    </select>
+    
+    <select id="sum_iosOrder_by_time_and_appId" parameterClass="map" resultClass="java.util.HashMap">
+        <![CDATA[
+            SELECT SUM(p.amount) as amount FROM coc_ios_order o join coc_product p on p.product_id = o.product_id 
+ 			where DATE_FORMAT(create_time ,"%Y/%m/%d") between #startTime# and #endTime# 
+        ]]>
+        <isNotNull property="appId" prepend="AND">
+        	app_id = #appId#
+        </isNotNull>
+        <isNotNull property="userId" prepend="AND">
+        	o.user_id = #userId#
+        </isNotNull>
+    </select>
+    
+    <select id="sum_iosOrder" parameterClass="IosOrder" resultClass="java.util.HashMap">
+        <![CDATA[
+            SELECT SUM(p.amount) as amount FROM coc_ios_order o join coc_product p on p.product_id = o.product_id
+        ]]>
+    </select>
+    
+    <update id="updateIosOrder" parameterClass="IosOrder">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+        	<isNotNull property="transactionId" prepend=",">
+		<![CDATA[
+                    transaction_id = #transactionId#
+		]]>
+            </isNotNull>
+            <isNotNull property="productId" prepend=",">
+		<![CDATA[
+                    product_id = #productId#
+		]]>
+            </isNotNull>
+            <isNotNull property="itemId" prepend=",">
+		<![CDATA[
+                    item_id = #itemId#
+		]]>
+            </isNotNull>
+            <isNotNull property="quantity" prepend=",">
+		<![CDATA[
+                    quantity = #quantity#
+		]]>
+            </isNotNull>
+            <isNotNull property="bid" prepend=",">
+		<![CDATA[
+                    bid = #bid#
+		]]>
+            </isNotNull>
+            <isNotNull property="bvrs" prepend=",">
+		<![CDATA[
+                    bvrs = #bvrs#
+		]]>
+            </isNotNull>
+            <isNotNull property="purchaseDate" prepend=",">
+		<![CDATA[
+                    purchase_date = #purchaseDate#
+		]]>
+            </isNotNull>
+            <isNotNull property="jsonData" prepend=",">
+		<![CDATA[
+                    json_data = #jsonData#
+		]]>
+            </isNotNull>
+            <isNotNull property="appId" prepend=",">
+		<![CDATA[
+                    app_id = #appId#
+		]]>
+            </isNotNull>
+            <isNotNull property="userId" prepend=",">
+		<![CDATA[
+                    user_id = #userId#
+		]]>
+            </isNotNull>
+            <isNotNull property="createTime" prepend=",">
+		<![CDATA[
+                    create_time = #createTime#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where id = #id#
+    </update>
+    
+</sqlMap>

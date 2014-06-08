@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="PaypalOrderSQL">
+    
+    <typeAlias alias="PaypalOrder" type="com.ngnsoft.ngp.model.PaypalOrder"/>
+    
+    <resultMap id="rm_PaypalOrder" class="PaypalOrder">
+        <result property="id"/>
+        <result property="btnId" column="btn_id"/>
+        <result property="business" column="business"/>
+        <result property="quantity"  column="quantity"/>
+        <result property="custom" column="custom"/>
+        <result property="ipnTrackId" column="ipn_track_id"/>
+        <result property="itemName" column="item_name"/>
+        <result property="itemNumber" column="item_number"/>
+        <result property="jsonData" column="json_data"/>
+        <result property="payerEmail" column="payer_email"/>
+        <result property="payerId" column="payer_id"/>
+        <result property="paymentData" column="payment_date"/>
+        <result property="paymentDateMs" column="payment_date_ms"/>
+        <result property="txnId" column="txn_id"/>
+        <result property="txnType" column="txn_type"/>
+        <result property="receiverId" column="receiver_id"/>
+        <result property="receiverEmail" column="receiver_email"/>
+    </resultMap>
+    
+    <insert id="savePaypalOrder" parameterClass="PaypalOrder">
+        <![CDATA[
+            INSERT INTO $tableName$ (btn_id, business, quantity, custom, ipn_track_id, item_name, item_number, json_data, payer_email, payer_id, payment_date
+            , payment_date_ms, txn_id, txn_type, receiver_id, receiver_email) 
+            VALUES (#btnId#, #business#, #quantity#, #custom#, #ipnTrackId#, #itemName#, #itemNumber#, #jsonData#, #payerEmail#, #payerId#, #paymentData#
+            , #paymentDateMs#, #txnId#, #txnType#, #receiverId#, #receiverEmail#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionPaypalOrder">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="btnId" prepend="AND">
+		<![CDATA[
+                    btn_id = #btnId#
+		]]>
+            </isNotNull>
+            <isNotNull property="payerId" prepend="AND">
+		<![CDATA[
+                    payer_id = #payerId#
+		]]>
+            </isNotNull>
+            <isNotNull property="txnId" prepend="AND">
+		<![CDATA[
+                    txn_id = #txnId#
+		]]>
+            </isNotNull>
+            <isNotNull property="ipnTrackId" prepend="AND">
+		<![CDATA[
+                    ipn_track_id = #ipnTrackId#
+		]]>
+            </isNotNull>
+            <isNotNull property="receiverId" prepend="AND">
+		<![CDATA[
+                    receiver_id = #receiverId#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findPaypalOrder" parameterClass="PaypalOrder" resultMap="rm_PaypalOrder">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionPaypalOrder"/>
+    </select>
+
+</sqlMap>

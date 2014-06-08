@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="AppSQL">
+    
+    <typeAlias alias="App" type="com.ngnsoft.ngp.model.App"/>
+    <typeAlias alias="Zone" type="com.ngnsoft.ngp.model.Zone"/>
+
+    <resultMap id="rm_app_base" class="App">  
+        <result property="id"/>
+        <result property="name"/>
+        <result property="baseId" column="base_id"/>
+        <result property="baseName" column="base_name"/>
+        <result property="url"/>
+        <result property="iconUrn" column="icon_urn"/>
+        <result property="status"/>
+        <result property="statusDesc" column="status_desc"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    
+    <resultMap id="rm_zone" class="Zone">
+    	<result property="id"/>
+        <result property="name"/>
+        <result property="favEngineId" column="fav_engine_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    
+    <resultMap id="rm_app_with_zone" class="App" extends="rm_app_base" >
+        <result property="zones" column="id" select="find_zone_by_app"/>
+    </resultMap>
+    
+    <insert id="saveApp" parameterClass="App">
+        <![CDATA[
+            INSERT INTO $tableName$ (id, name, base_id, base_name, url, icon_urn, status, status_desc, create_time, update_time) 
+            VALUES (#id#, #name#, #baseId#, #baseName#, #url#, #iconUrn#, #status#, #statusDesc#, #createTime#, #updateTime#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionApp">
+	<dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id like '%$id$%'
+		]]>
+            </isNotNull>
+            <isNotNull property="name" prepend="AND">
+		<![CDATA[
+                    name like '%$name$%'
+		]]>
+            </isNotNull>
+            <isNotNull property="baseId" prepend="AND">
+		<![CDATA[
+                    base_id = #baseId#
+		]]>
+            </isNotNull>
+            <isNotNull property="status" prepend="AND">
+		<![CDATA[
+                    status = #status#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findApp" parameterClass="App" resultMap="rm_app_with_zone">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionApp"/>
+    </select>
+    
+    <select id="find_app_in_app_zone" parameterClass="com.ngnsoft.ngp.model.AppZone" resultMap="rm_app_with_zone">
+        <![CDATA[
+            SELECT a.* FROM app a , app_zone z where a.id = z.app_id
+        ]]>
+        <isNotNull property="appId">
+        	<isEqual property="isBaid" compareValue="true" prepend="AND">
+	        	(z.app_id = #appId# or z.app_id in (select b.id from app b where b.base_id = #appId#)) 
+	        </isEqual>
+       		<isEqual property="isBaid" compareValue="false" prepend="AND">
+	        	z.app_id = #appId#
+	        </isEqual>
+        </isNotNull>
+        GROUP BY a.id
+    </select>
+    
+    <select id="countApp" resultClass="long" parameterClass="App">
+  		<![CDATA[
+            SELECT count(*) FROM $tableName$
+        ]]>
+        <include refid="whereConditionApp"/>
+  	</select>
+    
+    <select id="find_zone_by_app" resultMap="rm_zone">
+        <![CDATA[
+            SELECT e.* FROM zone e, app_zone ae WHERE e.id = ae.zone_id and app_id = #value#
+        ]]>
+    </select>
+    
+    <select id="find_zones_by_app_and_isBaid" resultClass="map" resultMap="rm_zone">
+        <![CDATA[
+            SELECT e.* FROM zone e, app_zone ae WHERE e.id = ae.zone_id
+        ]]>
+        <dynamic>
+        	<isNotNull property="appId" prepend="AND">
+        		(app_id = #appId# or (app_id in (select b.base_id from app b where b.id = #appId#) AND is_baid = 1)) GROUP BY e.id
+        	</isNotNull>
+        </dynamic>
+    </select>
+    
+    <select id="find_distinct_base_id" parameterClass="App" resultMap="rm_app_base">
+        <![CDATA[
+            SELECT a.* FROM $tableName$ as a group by base_id
+        ]]>
+    </select>
+    
+    <select id="find_app_by_isBaid_and_appId" resultClass="map" resultMap="rm_app_base">
+        <![CDATA[
+            SELECT * FROM app
+        ]]>
+        <dynamic prepend="where">
+        <isNotNull property="appId" prepend="AND">
+        	<isEqual property="baid" compareValue="1">
+	        	id = base_id and id = #appId#
+	        </isEqual>
+       		<isEqual property="baid" compareValue="0">
+	        	id != base_id and id = #appId#
+	        </isEqual>
+        </isNotNull>
+        <isNull property="appId" prepend="AND">
+        	<isEqual property="baid" compareValue="1">
+	        	id = base_id 
+	        </isEqual>
+       		<isEqual property="baid" compareValue="0">
+	        	id != base_id 
+	        </isEqual>
+        </isNull>
+        </dynamic>
+    </select>
+    
+    <select id="count_app_by_isBaid_and_appId" parameterClass="map" resultClass="long">
+        <![CDATA[
+            SELECT count(*) FROM app
+        ]]>
+        <dynamic prepend="where">
+        <isNotNull property="appId" prepend="AND">
+        	<isEqual property="baid" compareValue="1">
+	        	id = base_id and id = #appId#
+	        </isEqual>
+       		<isEqual property="baid" compareValue="0">
+	        	id != base_id and id = #appId#
+	        </isEqual>
+        </isNotNull>
+        <isNull property="appId" prepend="AND">
+        	<isEqual property="baid" compareValue="1">
+	        	id = base_id 
+	        </isEqual>
+       		<isEqual property="baid" compareValue="0">
+	        	id != base_id 
+	        </isEqual>
+        </isNull>
+        </dynamic>
+    </select>
+    
+    <select id="count_distinct_base_id" parameterClass="App" resultClass="long">
+        <![CDATA[
+            SELECT count(*) from (select * FROM $tableName$  group by base_id) as a
+        ]]>
+    </select>
+    
+    <update id="updateApp" parameterClass="App">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="name" prepend=",">
+		<![CDATA[
+                    name = #name#
+		]]>
+            </isNotNull>
+            <isNotNull property="baseName" prepend=",">
+		<![CDATA[
+                    base_name = #baseName#
+		]]>
+            </isNotNull>
+            <isNotNull property="baseId" prepend=",">
+		<![CDATA[
+                    base_id = #baseId#
+		]]>
+            </isNotNull>
+             <isNotNull property="iconUrn" prepend=",">
+		<![CDATA[
+                    icon_urn = #iconUrn#
+		]]>
+            </isNotNull>
+             <isNotNull property="status" prepend=",">
+		<![CDATA[
+                    status = #status#
+		]]>
+            </isNotNull>
+            <isNotNull property="updateTime" prepend=",">
+		<![CDATA[
+                    update_time = #updateTime#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where id = #id#
+    </update>
+    
+    <select id="getAppByAppIds" parameterClass="string" resultClass="string">
+        <![CDATA[
+            select id from app where base_id = (select base_id from app where id = #appId#)
+        ]]>
+    </select>
+    
+    <delete id="removeApp" parameterClass="App">
+        <![CDATA[
+            DELETE FROM $tableName$
+        ]]>
+        <include refid="whereConditionApp"/>
+    </delete>
+    
+</sqlMap>

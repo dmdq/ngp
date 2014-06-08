@@ -1,0 +1,28 @@
+@charset "utf-8";
+/* CSS Document */
+* {
+ font-size: 12px; font-family: "Courier New", Simsun; 
+ margin:0;
+padding:0;
+ }
+
+.head{
+background:url(../images/bg_main_head.jpg) repeat-x;
+height:63px;
+}
+
+.head .btns { position: absolute; right: 17px;top:34px; }
+		.head .btn { cursor:pointer;background: url(../images/btn_head.gif); width: 81px; height: 22px; color: white; border:0; }
+
+.tdindex{
+text-align:left;
+}
+/*输入框不可读*/
+.input_disable{
+background:red;
+}
+
+/*数据在单元格中右移*/
+.data_right td{
+	text-align: right;
+}

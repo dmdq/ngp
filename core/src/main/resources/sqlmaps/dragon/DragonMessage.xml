@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="DragonMessageSQL">
+    
+    <typeAlias alias="DragonMessage" type="com.ngnsoft.ngp.component.dragon.model.DragonMessage"/>
+    
+    <resultMap id="rm_DragonMessage" class="DragonMessage">
+        <result property="id"/>
+        <result property="from" column="from_uid"/>
+        <result property="to" column="to_uid"/>
+        <result property="title"/>
+        <result property="body" />
+        <result property="attach" />
+        <result property="attachStatus" column="attach_status"/>
+        <result property="type" />
+        <result property="status" column="status"/>
+        <result property="active" column="active"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+    
+    <insert id="saveDragonMessage" parameterClass="DragonMessage">
+        <![CDATA[
+            INSERT INTO $tableName$ (from_uid, to_uid, title, body, attach, attach_status, type, active, status, create_time) 
+            VALUES (#from#, #to#, #title#, #body#, #attach#, #attachStatus#, #type#, #active#, #status#, #createTime#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionDragonMessage">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="from" prepend="AND">
+		<![CDATA[
+                    from_uid = #from#
+		]]>
+            </isNotNull>
+            <isNotNull property="to" prepend="AND">
+		<![CDATA[
+                    to_uid = #to#
+		]]>
+            </isNotNull>
+            <isNotNull property="type" prepend="AND">
+		<![CDATA[
+                    type = #type#
+		]]>
+            </isNotNull>
+            <isNotNull property="active" prepend="AND">
+		<![CDATA[
+                    active = #active#
+		]]>
+            </isNotNull>
+            <isNotNull property="status" prepend="AND">
+		<![CDATA[
+                    status = #status#
+		]]>
+            </isNotNull>
+             <isNotNull property="attachStatus" prepend="AND">
+		<![CDATA[
+                    attach_status = #attachStatus#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findDragonMessage" parameterClass="DragonMessage" resultMap="rm_DragonMessage">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionDragonMessage"/>
+        ORDER BY create_time DESC
+    </select>
+    
+    <select id="find_message_by_userId" parameterClass="DragonMessage" resultMap="rm_DragonMessage">
+    	<![CDATA[
+            SELECT * FROM dragon_message  
+        ]]>
+        <dynamic prepend="WHERE">
+        	<isNotNull property="to" prepend="AND">
+		<![CDATA[
+                    to_uid = #to# 
+		]]>
+            </isNotNull>
+       		<isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id >= #id# 
+		]]>
+            </isNotNull>
+            <isNotNull property="type" prepend="AND">
+		<![CDATA[
+                    type = #type# 
+		]]>
+            </isNotNull>
+		</dynamic>
+        ORDER BY create_time DESC
+    </select>
+    
+    <select id="find_dragonMessage_by_type" parameterClass="DragonMessage" resultMap="rm_DragonMessage">
+    	 <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <dynamic prepend="WHERE">
+			  <isNotNull property="type" prepend="AND">
+		<![CDATA[
+                    type = #type#
+		]]>
+            </isNotNull>
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id >= #id#
+		]]>
+            </isNotNull>   
+        </dynamic>
+        ORDER BY create_time DESC
+    </select>
+    
+    <select id="countDragonMessage" resultClass="long" parameterClass="DragonMessage">
+  		<![CDATA[
+            SELECT count(*) FROM $tableName$
+        ]]>
+        <include refid="whereConditionDragonMessage"/>
+  	</select>
+  	
+  	<update id="updateUnReadAttachForApply" parameterClass="map">
+        <![CDATA[
+            UPDATE dragon_message set attach_status = 1
+        ]]>
+        where from_uid = #userId# and type = #type# and active = #active# and to_uid = #to# and attach_status = 0
+    </update>
+    
+    <update id="updateDragonMessage" parameterClass="DragonMessage">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="status" prepend=",">
+		<![CDATA[
+                    status = #status#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where id = #id#
+    </update>
+    
+    <delete id="removeDragonMessage" parameterClass="DragonMessage">
+        <![CDATA[
+            DELETE FROM $tableName$
+        ]]>
+        <include refid="whereConditionDragonMessage"/>
+    </delete>
+    
+</sqlMap>

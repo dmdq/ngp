@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="PlacardTargetSQL">
+    
+    <typeAlias alias="PlacardTarget" type="com.ngnsoft.ngp.model.PlacardTarget"/>
+    <typeAlias alias="PlacardTargetShow" type="com.ngnsoft.ngp.model.show.PlacardTargetShow"/>
+    
+    <resultMap id="rm_PlacardTarget" class="PlacardTarget">
+        <result property="id"/>
+        <result property="placardId" column="placard_id"/>
+        <result property="appId" column="app_id"/>
+        <result property="appVersion" column="app_version"/>
+        <result property="isBaid" column="is_baid"/>
+        <result property="zoneId" column="zone_id"/>
+    </resultMap>
+    
+    <resultMap id="rm_PlacardTarget_with_appName" extends="rm_PlacardTarget" class="PlacardTargetShow">
+        <result property="appName" column="name"/>
+        <result property="title" column="title"/>
+    </resultMap>
+    
+    <insert id="savePlacardTarget" parameterClass="PlacardTarget">
+        <![CDATA[
+            INSERT INTO $tableName$ (placard_id, app_id, app_version, is_baid, zone_id) 
+            VALUES (#placardId#, #appId#, #appVersion#, #isBaid#, #zoneId#)
+        ]]>
+        <selectKey resultClass="java.lang.Long" keyProperty="id" type="post">
+            select last_insert_id();
+        </selectKey>
+    </insert>
+    
+    <sql id="whereConditionPlacardTarget">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="placardId" prepend="AND">
+		<![CDATA[
+                    placard_id = #placardId#
+		]]>
+            </isNotNull>
+            <isNotNull property="zoneId" prepend="AND">
+		<![CDATA[
+                    zone_id = #zoneId#
+		]]>
+            </isNotNull>
+            <isNotNull property="appId" prepend="AND">
+		<![CDATA[
+                    app_id = #appId#
+		]]>
+            </isNotNull>
+            <isNotNull property="isBaid" prepend="AND">
+		<![CDATA[
+                    is_baid = #isBaid#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="find_placard_target_by_zoneId" parameterClass="PlacardTarget" resultMap="rm_PlacardTarget">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="placardId" prepend="AND">
+		<![CDATA[
+                    placard_id = #placardId#
+		]]>
+            </isNotNull>
+            <isNotNull property="appId" prepend="AND">
+		<![CDATA[
+                    app_id = #appId#
+		]]>
+            </isNotNull>
+            <isNotNull property="isBaid" prepend="AND">
+		<![CDATA[
+                    is_baid = #isBaid# and zone_id = NULL
+		]]>
+            </isNotNull>
+        </dynamic>
+    </select>
+    
+    <select id="findPlacardTarget" parameterClass="PlacardTarget" resultMap="rm_PlacardTarget">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionPlacardTarget"/>
+    </select>
+    
+    <select id="find_placard_Target_by_placardId" parameterClass="map" resultMap="rm_PlacardTarget">
+        <![CDATA[
+            SELECT a.* from placard_target a, placard b
+            	where a.placard_id = b.id
+            	and a.placard_id = #placardId#
+            	and b.start_time <= #sysDate# and b.end_time >= #sysDate#
+        ]]>
+    </select>
+    
+    <select id="find_placardTarget_with_app" parameterClass="PlacardTarget" resultMap="rm_PlacardTarget_with_appName">
+    	<![CDATA[
+            SELECT a.*, b.name, c.title FROM $tableName$ as a 
+            left join app b on a.app_id = b.id
+            left join placard c on a.placard_id = c.id
+        ]]>
+        <dynamic prepend="WHERE">
+            <isNotNull property="placardId" prepend="AND">
+		<![CDATA[
+                    placard_id = #placardId#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </select>
+    
+    <select id="countPlacardTarget" parameterClass="PlacardTarget" resultClass="long">
+    	<![CDATA[
+            SELECT count(*) FROM $tableName$
+        ]]>
+        <include refid="whereConditionPlacardTarget"/>
+    </select>
+    
+    <update id="updatePlacardTarget" parameterClass="PlacardTarget">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="appVersion" prepend=",">
+		<![CDATA[
+                    app_version = #appVersion#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where id = #id#
+    </update>
+    
+    <delete id="removePlacardTarget" parameterClass="PlacardTarget">
+		<![CDATA[
+			DELETE FROM $tableName$
+		]]>
+		<include refid="whereConditionPlacardTarget"/>
+	</delete>
+
+</sqlMap>

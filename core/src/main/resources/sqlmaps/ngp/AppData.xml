@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="AppDataSQL">
+    
+    <typeAlias alias="AppData" type="com.ngnsoft.ngp.component.model.AppData"/>
+    
+    <resultMap id="rm_AppData" class="AppData">
+    	<result property="userId" column="user_id"/>
+        <result property="nick" column="nick"/>
+        <result property="ulld" column="ulld"/>
+        <result property="avatar" column="avatar_urn"/>
+        <result property="status" column="status"/>
+        <result property="statusDetail" column="status_detail"/>
+        <result property="coin" column="coin"/>
+        <result property="level" column="level"/>
+        <result property="touchTime" column="touch_time"/>
+        <result property="actionTime" column="action_time"/>
+        <result property="jsonData" column="json_data"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    
+    <insert id="saveAppData" parameterClass="AppData">
+        <![CDATA[
+            INSERT INTO $tableName$ (user_id, nick, ulld, avatar_urn, status, status_detail, coin, level, json_data, touch_time, action_time, create_time, update_time) 
+            VALUES (#userId#, #nick#, #ulld#, #avatar#, #status#, #statusDetail#, #coin#, #level#, #jsonData#, #touchTime#, #actionTime#, #createTime#, #updateTime#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionAppData">
+        <dynamic prepend="WHERE">
+            <isNotNull property="userId" prepend="AND">
+		<![CDATA[
+                    user_id = #userId#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findAppData" parameterClass="AppData" resultMap="rm_AppData">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionAppData"/>
+    </select>
+    
+    <update id="updateAppData" parameterClass="AppData">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="status" prepend=",">
+		<![CDATA[
+                    status = #status#
+		]]>
+            </isNotNull>
+            <isNotNull property="statusDetail" prepend=",">
+		<![CDATA[
+                    status_detail = #statusDetail#
+		]]>
+            </isNotNull>
+            <isNotNull property="ulld" prepend=",">
+		<![CDATA[
+                    ulld = #ulld#
+		]]>
+            </isNotNull>
+            <isNotNull property="jsonData" prepend=",">
+		<![CDATA[
+                    json_data = #jsonData#
+		]]>
+            </isNotNull>
+            <isNotNull property="nick" prepend=",">
+		<![CDATA[
+                    nick = #nick#
+		]]>
+            </isNotNull>
+            <isNotNull property="avatar" prepend=",">
+		<![CDATA[
+                    avatar_urn = #avatar#
+		]]>
+            </isNotNull>
+            <isNotNull property="coin" prepend=",">
+		<![CDATA[
+                    coin = #coin#
+		]]>
+            </isNotNull>
+            <isNotNull property="level" prepend=",">
+		<![CDATA[
+                    level = #level#
+		]]>
+            </isNotNull>
+            <isNotNull property="touchTime" prepend=",">
+		<![CDATA[
+                    touch_time = #touchTime#
+		]]>
+            </isNotNull>
+            <isNotNull property="actionTime" prepend=",">
+		<![CDATA[
+                    action_time = #actionTime#
+		]]>
+            </isNotNull>
+            <isNotNull property="updateTime" prepend=",">
+		<![CDATA[
+                    update_time = #updateTime#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where user_id = #userId#
+    </update>
+    
+	<delete id="removeAppData" parameterClass="AppData">
+        <![CDATA[
+            DELETE FROM $tableName$
+        ]]>
+        <include refid="whereConditionAppData"/>
+    </delete>
+	
+</sqlMap>

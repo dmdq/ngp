@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="SlotsIntegralHistorySQL">
+    
+    <typeAlias alias="SlotsIntegralHistory" type="com.ngnsoft.ngp.model.SlotsIntegralHistory"/>
+    
+    <resultMap id="rm_SlotsIntegralHistory" class="SlotsIntegralHistory">
+    	<result property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="ranking" column="ranking"/>
+        <result property="integral" column="integral"/>
+        <result property="eligible" column="eligible"/>
+        <result property="collectStatus" column="collect_status"/>
+        <result property="collectTime" column="collect_time"/>
+        <result property="weekNum" column="week_num"/>
+        <result property="jsonData" column="json_data"/>
+        <result property="activityData" column="activity_data"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+    
+    <insert id="saveSlotsIntegralHistory" parameterClass="SlotsIntegralHistory">
+        <![CDATA[
+            INSERT INTO $tableName$ (id, user_id, ranking, collect_status, collect_time, integral, eligible, week_num, json_data, activity_data, create_time) 
+            VALUES (#id#, #userId#, #ranking#, #collectStatus#, #collectTime#, #integral#, #eligible#, #weekNum#, #jsonData#, #activityData#, #createTime#)
+        ]]>
+    </insert>
+    
+    <insert id="save_slots_history_from_slots_data" parameterClass="map">
+    	<![CDATA[
+            insert into slots_integral_history(user_id, ranking, week_num, collect_status, collect_time, integral, eligible, json_data, activity_data, create_time) (select user_id, 0, #week#, collect_status, collect_time, integral, eligible, json_data, activity_data, touch_time from slots_data )
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionSlotsIntegralHistory">
+        <dynamic prepend="WHERE">
+            <isNotNull property="userId" prepend="AND">
+		<![CDATA[
+                    user_id = #userId#
+		]]>
+            </isNotNull>
+            <isNotNull property="weekNum" prepend="AND">
+		<![CDATA[
+                    week_num = #weekNum#
+		]]>
+            </isNotNull>
+            <isNotNull property="eligible" prepend="AND">
+		<![CDATA[
+                    eligible = #eligible#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findSlotsIntegralHistory" parameterClass="SlotsIntegralHistory" resultMap="rm_SlotsIntegralHistory">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionSlotsIntegralHistory"/>
+    </select>
+    
+    <select id="find_last_week_by_slots_user" parameterClass="map" resultMap="rm_SlotsIntegralHistory">
+    	<![CDATA[
+    		select * FROM slots_integral_history where week_num = #weekNum# and eligible = 1 
+    	]]>
+    	<isEqual property="collectStatus" compareValue="0" prepend="and">
+    		collect_status = #collectStatus# ORDER BY $type$ DESC
+    	</isEqual>
+    	<isEqual property="collectStatus" compareValue="1" prepend="and">
+    		collect_status = #collectStatus# ORDER BY $type$
+    	</isEqual>
+            <isNull property="collectStatus">
+		<![CDATA[
+                    ORDER BY $type$ DESC
+		]]>
+            </isNull>
+        <![CDATA[
+        	 limit #count#
+        ]]>
+    </select>
+    
+    <select id="find_last_week_ranking_by_slots_user" parameterClass="map" resultClass="long">
+    	<![CDATA[
+    		select count(1) FROM slots_integral_history sd1, slots_integral_history sd2 where sd1.week_num = #weekNum# and sd2.week_num = #weekNum# 
+    		and sd1.user_id != #userId# and sd2.user_id = #userId# and 
+    		((sd1.integral > sd2.integral) or ( sd1.integral = sd2.integral and sd1.create_time < sd2.create_time))
+    	]]>
+    </select>
+    
+    <select id="find_collect_last_week_ranking_by_slots_user" parameterClass="map" resultClass="long">
+    	<![CDATA[
+    		select count(1) FROM slots_integral_history sd1, slots_integral_history sd2 where sd1.week_num = #weekNum# and sd2.week_num = #weekNum# 
+    		and sd1.user_id != #userId# and sd2.user_id = #userId#  
+    	]]>
+    	<isNotNull property="collectStatus" prepend="AND">
+			<![CDATA[
+	                    sd1.collect_status = #collectStatus#
+			]]>
+		</isNotNull>
+		<![CDATA[
+			and ((sd1.collect_time < sd2.collect_time) or ( sd1.collect_time = sd2.collect_time and sd1.create_time < sd2.create_time))
+		]]>
+    </select>
+    
+</sqlMap>

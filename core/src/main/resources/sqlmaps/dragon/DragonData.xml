@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="DragonDataSQL">
+    
+    <typeAlias alias="DragonData" type="com.ngnsoft.ngp.component.dragon.model.DragonData"/>
+    <typeAlias alias="FriendInfo" type="com.ngnsoft.ngp.model.show.FriendInfo"/>
+    <typeAlias alias="Comrade" type="com.ngnsoft.ngp.model.show.Comrade"/>
+    
+    <resultMap id="rm_DragonData" class="DragonData">
+    	<result property="userId" column="user_id"/>
+        <result property="nick" column="nick"/>
+        <result property="ulld" column="ulld"/>
+        <result property="avatar" column="avatar_urn"/>
+        <result property="status" column="status"/>
+        <result property="statusDetail" column="status_detail"/>
+        <result property="coin" column="coin"/>
+        <result property="level" column="level"/>
+        <result property="touchTime" column="touch_time"/>
+        <result property="actionTime" column="action_time"/>
+        <result property="jsonData" column="json_data"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    
+    <resultMap id="rm_FriendInfo" class="FriendInfo">
+        <result property="userKey"/>
+    </resultMap>
+    
+    <resultMap id="rm_Comrade" class="Comrade">
+        <result property="userId" column="user_id"/>
+        <result property="jsonData" column="json_data"/>
+        <result property="isFrd" column="isFrd"/>
+        <result property="level" column="level"/>
+        <result property="actionTime" column="action_time"/>
+    </resultMap>
+    
+    <insert id="saveDragonData" parameterClass="DragonData">
+        <![CDATA[
+            INSERT INTO $tableName$ (user_id, nick, ulld, avatar_urn, status, status_detail, coin, level, json_data, touch_time, action_time, create_time, update_time) 
+            VALUES (#userId#, #nick#, #ulld#, #avatar#, #status#, #statusDetail#, #coin#, #level#, #jsonData#, #touchTime#, #actionTime#, #createTime#, #updateTime#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionDragonData">
+        <dynamic prepend="WHERE">
+            <isNotNull property="userId" prepend="AND">
+		<![CDATA[
+                    user_id = #userId#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <sql id="Example_dragon_In_List_Clause" >
+            <iterate property="rangeList" open="(" close=")" conjunction=",">
+    		#rangeList[]#
+            </iterate>
+    </sql>
+    
+    <select id="findDragonData" parameterClass="DragonData" resultMap="rm_DragonData">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionDragonData"/>
+    </select>
+    
+    <select id="find_trophy_by_dragon_user" parameterClass="map" resultMap="rm_DragonData">
+    	<![CDATA[
+    		SELECT * FROM dragon_data a ORDER BY $type$ DESC limit #count#
+    	]]>
+    </select>
+    
+    <select id="countRobotByMap" parameterClass="map" resultClass="long">
+    	<![CDATA[
+    		SELECT count(1) FROM dragon_data where user_id < #robotId#
+    	]]>
+    </select>
+    
+    <select id="find_robot_random" parameterClass="map" resultMap="rm_DragonData">
+    	<![CDATA[
+    		SELECT * FROM dragon_data where user_id < #robotId# limit #start#, #skip#
+    	]]>
+    </select>
+    
+    <select id="find_local_friends_with_dragon_info_by_map" parameterClass="map" resultMap="rm_FriendInfo">
+        <![CDATA[
+            SELECT a.user_id as userKey FROM user_friend uf
+        ]]>
+        <isEqual property="confirm" compareValue="1">
+        	inner join dragon.dragon_data a on (a.user_id = uf.fa or a.user_id = uf.fb)
+			where uf.fs = #confirm# and (fa = #userId# or fb = #userId#) and a.user_id != #userId#
+        </isEqual>
+        <isEqual property="confirm" compareValue="0">
+        	inner join dragon.dragon_data a on (a.user_id = uf.fa)
+			where uf.fs = #confirm# and (fb = #userId#) and a.user_id != #userId#
+        </isEqual>
+    </select>
+    
+    <select id="count_local_friends_with_dragon_info_by_map" parameterClass="map" resultClass="long">
+        <![CDATA[
+            SELECT count(*) FROM user_friend uf
+        ]]>
+        <isEqual property="confirm" compareValue="1">
+        	inner join dragon.dragon_data a on (a.user_id = uf.fa or a.user_id = uf.fb)
+			where uf.fs = #confirm# and (fa = #userId# or fb = #userId#) and a.user_id != #userId#
+        </isEqual>
+        <isEqual property="confirm" compareValue="0">
+        	inner join dragon.dragon_data a on (a.user_id = uf.fa)
+			where uf.fs = #confirm# and (fb = #userId#) and a.user_id != #userId#
+        </isEqual>
+    </select>
+    
+    <select id="find_friends_dragon_data_as_comrade" parameterClass="map" resultMap="rm_Comrade">
+    	<![CDATA[
+            SELECT a.user_id, a.json_data, 1 as isFrd, a.level, a.action_time FROM dragon.dragon_data a, user_friend uf
+            where ((a.user_id = uf.fb and uf.fa = #userId#)
+             or (a.user_id = uf.fa and uf.fb = #userId#))
+             and fs = 1
+        ]]>
+    </select>
+    
+    <select id="find_risker_dragon_data_as_comrade" parameterClass="map" resultMap="rm_Comrade">
+    	<![CDATA[
+            SELECT a.user_id, a.json_data, 0 as isFrd, a.level, a.action_time FROM dragon.dragon_data a
+            where a.level between #levelLimit# and #levelUpper# and a.user_id > 100000
+        ]]>
+        <isNotEmpty property="rangeList" prepend="AND">
+            a.user_id not in
+            <include refid="Example_dragon_In_List_Clause" />
+        </isNotEmpty>
+        limit #start#, 1
+    </select>
+    
+    <update id="updateDragonData" parameterClass="DragonData">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="status" prepend=",">
+		<![CDATA[
+                    status = #status#
+		]]>
+            </isNotNull>
+            <isNotNull property="statusDetail" prepend=",">
+		<![CDATA[
+                    status_detail = #statusDetail#
+		]]>
+            </isNotNull>
+            <isNotNull property="ulld" prepend=",">
+		<![CDATA[
+                    ulld = #ulld#
+		]]>
+            </isNotNull>
+            <isNotNull property="jsonData" prepend=",">
+		<![CDATA[
+                    json_data = #jsonData#
+		]]>
+            </isNotNull>
+            <isNotNull property="nick" prepend=",">
+		<![CDATA[
+                    nick = #nick#
+		]]>
+            </isNotNull>
+            <isNotNull property="avatar" prepend=",">
+		<![CDATA[
+                    avatar_urn = #avatar#
+		]]>
+            </isNotNull>
+            <isNotNull property="coin" prepend=",">
+		<![CDATA[
+                    coin = #coin#
+		]]>
+            </isNotNull>
+            <isNotNull property="level" prepend=",">
+		<![CDATA[
+                    level = #level#
+		]]>
+            </isNotNull>
+            <isNotNull property="touchTime" prepend=",">
+		<![CDATA[
+                    touch_time = #touchTime#
+		]]>
+            </isNotNull>
+            <isNotNull property="actionTime" prepend=",">
+		<![CDATA[
+                    action_time = #actionTime#
+		]]>
+            </isNotNull>
+            <isNotNull property="updateTime" prepend=",">
+		<![CDATA[
+                    update_time = #updateTime#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where user_id = #userId#
+    </update>
+    
+    <update id="refreshRobotNotRandom" parameterClass="map">
+	    <![CDATA[
+	    	update dragon_data set action_time = #sysDate# where user_id < #robotId# and TIMESTAMPDIFF(day, action_time, #sysDate#) >= #intervalDay#
+	    ]]>
+    </update>
+	
+	<delete id="removeDragonData" parameterClass="DragonData">
+        <![CDATA[
+            DELETE FROM $tableName$
+        ]]>
+        <include refid="whereConditionDragonData"/>
+    </delete>
+	
+</sqlMap>

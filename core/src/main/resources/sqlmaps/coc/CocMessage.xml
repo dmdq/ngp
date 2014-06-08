@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="CocMessageSQL">
+    
+    <typeAlias alias="CocMessage" type="com.ngnsoft.ngp.component.coc.model.CocMessage"/>
+    
+    <resultMap id="rm_CocMessage" class="CocMessage">
+        <result property="id"/>
+        <result property="from" column="from_uid"/>
+        <result property="to" column="to_uid"/>
+        <result property="title"/>
+        <result property="body" />
+        <result property="attach" />
+        <result property="attachStatus" column="attach_status"/>
+        <result property="type" />
+        <result property="status" />
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+    
+    <insert id="saveCocMessage" parameterClass="CocMessage">
+        <![CDATA[
+            INSERT INTO $tableName$ (from_uid, to_uid, title, body, attach, attach_status, type, status, create_time) 
+            VALUES (#from#, #to#, #title#, #body#, #attach#, #attachStatus#, #type#, #status#, #createTime#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionCocMessage">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="from" prepend="AND">
+		<![CDATA[
+                    from_uid = #from#
+		]]>
+            </isNotNull>
+            <isNotNull property="to" prepend="AND">
+		<![CDATA[
+                    to_uid = #to#
+		]]>
+            </isNotNull>
+            <isNotNull property="type" prepend="AND">
+		<![CDATA[
+                    type = #type#
+		]]>
+            </isNotNull>
+            <isNotNull property="status" prepend="AND">
+		<![CDATA[
+                    status = #status#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findCocMessage" parameterClass="CocMessage" resultMap="rm_CocMessage">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionCocMessage"/>
+        GROUP BY create_time DESC
+    </select>
+    
+    <select id="find_message_by_userId" parameterClass="map" resultMap="rm_CocMessage">
+    	<![CDATA[
+            SELECT * FROM app_message  
+        ]]>
+        <dynamic prepend="WHERE">
+       		<isNotNull property="to" prepend="AND">
+		<![CDATA[
+                    to_uid = #to# 
+		]]>
+            </isNotNull>
+       		<isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id >= #id# 
+		]]>
+            </isNotNull>
+            <isNotNull property="type" prepend="AND">
+		<![CDATA[
+                    type = #type# 
+		]]>
+            </isNotNull>
+		</dynamic>
+        GROUP BY create_time DESC
+    </select>
+    
+    <select id="find_cocMessage_by_type" parameterClass="CocMessage" resultMap="rm_CocMessage">
+    	 <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <dynamic prepend="WHERE">
+			  <isNotNull property="type" prepend="AND">
+		<![CDATA[
+                    type = #type#
+		]]>
+            </isNotNull>
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id >= #id#
+		]]>
+            </isNotNull>   
+        </dynamic>
+        GROUP BY create_time DESC
+    </select>
+    
+    <select id="countCocMessage" resultClass="long" parameterClass="CocMessage">
+  		<![CDATA[
+            SELECT count(*) FROM $tableName$
+        ]]>
+        <include refid="whereConditionCocMessage"/>
+  	</select>
+    
+    <update id="updateCocMessage" parameterClass="CocMessage">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="status" prepend=",">
+		<![CDATA[
+                    status = #status#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where id = #id#
+    </update>
+    
+    <delete id="removeCocMessage" parameterClass="CocMessage">
+        <![CDATA[
+            DELETE FROM $tableName$
+        ]]>
+        <include refid="whereConditionCocMessage"/>
+    </delete>
+    
+</sqlMap>

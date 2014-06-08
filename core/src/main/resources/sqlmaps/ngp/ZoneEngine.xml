@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZoneEngineSQL">
+    
+    <typeAlias alias="ZoneEngine" type="com.ngnsoft.ngp.model.ZoneEngine"/>
+    
+    <resultMap id="rm_ZoneEngine" class="ZoneEngine">  
+        <result property="id"/>
+        <result property="zoneId" column="zone_id"/>
+        <result property="engineId" column="engine_id"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+    
+    <insert id="saveZoneEngine" parameterClass="ZoneEngine">
+        <![CDATA[
+            INSERT INTO $tableName$ (zone_id, engine_id, create_time) 
+            VALUES (#zoneId#, #engineId#, #createTime#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionZoneEngine">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+    	</dynamic>
+    </sql>
+    
+    <select id="findZoneEngine" parameterClass="ZoneEngine" resultMap="rm_ZoneEngine">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionZoneEngine"/>
+    </select>
+    
+    <select id="find_engineIds_by_zones" parameterClass="long" resultClass="string">
+    	<![CDATA[
+            SELECT a.engine_id from zone_engine a where zone_id = #zoneId#
+        ]]>
+    </select>
+    
+    <delete id="removeZoneEngine" parameterClass="ZoneEngine">
+        <![CDATA[
+            DELETE FROM $tableName$
+        ]]>
+        <include refid="whereConditionZoneEngine"/>
+    </delete>
+</sqlMap>

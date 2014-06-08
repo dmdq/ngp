@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="UserActivityHistorySQL">
+    
+    <typeAlias alias="UserActivityHistory" type="com.ngnsoft.ngp.model.UserActivityHistory"/>
+    
+    <resultMap id="rm_UserActivityHistory" class="UserActivityHistory">  
+        <result property="id"/>
+        <result property="action"/>
+        <result property="userId" column="user_id"/>
+        <result property="appId" column="app_id"/>
+        <result property="appVersion" column="app_version"/>
+        <result property="deviceId" column="device_id"/>
+        <result property="engineId" column="engine_id"/>
+        <result property="ip" column="ip"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    
+    <insert id="saveUserActivityHistory" parameterClass="UserActivityHistory">
+        <![CDATA[
+            INSERT INTO $tableName$ (action, user_id, app_id, app_version, device_id, engine_id, ip, create_time, update_time) 
+            VALUES (#action#, #userId#, #appId#, #appVersion#, #deviceId#, #engineId#, #ip#, #createTime#, #updateTime#)
+        ]]>
+        <selectKey resultClass="java.lang.Long" keyProperty="id" type="post">
+            select last_insert_id();
+        </selectKey>
+    </insert>
+    
+    <sql id="whereConditionUserActivityHistory">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="action" prepend="AND">
+		<![CDATA[
+                    action = #action#
+		]]>
+            </isNotNull>
+            <isNotNull property="userId" prepend="AND">
+		<![CDATA[
+                    user_id = #userId#
+		]]>
+            </isNotNull>
+            <isNotNull property="appId" prepend="AND">
+		<![CDATA[
+                    app_id = #appId#
+		]]>
+            </isNotNull>
+            <isNotNull property="deviceId" prepend="AND">
+		<![CDATA[
+                    device_id = #deviceId#
+		]]>
+            </isNotNull>
+            <isNotNull property="engineId" prepend="AND">
+		<![CDATA[
+                    engine_id = #engineId#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <update id="updateUserActivityHistory" parameterClass="UserActivityHistory">
+    	<![CDATA[
+            update $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="appVersion" prepend=",">
+		<![CDATA[
+                    app_version = #appVersion#
+		]]>
+            </isNotNull>
+            <isNotNull property="deviceId" prepend=",">
+		<![CDATA[
+                    device_id = #deviceId#
+		]]>
+            </isNotNull>
+            <isNotNull property="engineId" prepend=",">
+		<![CDATA[
+                    engine_id = #engineId#
+		]]>
+            </isNotNull>
+             <isNotNull property="ip" prepend=",">
+		<![CDATA[
+                    ip = #ip#
+		]]>
+            </isNotNull>
+            <isNotNull property="updateTime" prepend=",">
+		<![CDATA[
+                    update_time = #updateTime#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where user_id = #userId# and app_id = #appId# and action = #action#
+    </update>
+    
+    <select id="findUserActivityHistory" parameterClass="UserActivityHistory" resultMap="rm_UserActivityHistory">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionUserActivityHistory"/>
+    </select>
+    
+    <select id="countUserActivityHistory" parameterClass="UserActivityHistory" resultClass="long">
+        <![CDATA[
+            SELECT count(1) FROM $tableName$
+        ]]>
+        <include refid="whereConditionUserActivityHistory"/>
+    </select>
+    
+</sqlMap>

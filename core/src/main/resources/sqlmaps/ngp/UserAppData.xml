@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="UserAppDataSQL">
+    
+    <typeAlias alias="UserAppData" type="com.ngnsoft.ngp.model.UserAppData"/>
+    <typeAlias alias="FriendInfo" type="com.ngnsoft.ngp.model.show.FriendInfo"/>
+    <typeAlias alias="Comrade" type="com.ngnsoft.ngp.model.show.Comrade"/>
+    
+    <resultMap id="rm_UserAppData" class="UserAppData">
+        <result property="id"/>
+        <result property="baid" column="baid" />
+        <result property="userId" column="user_id"/>
+        <result property="nick" column="nick"/>
+        <result property="ulld" column="ulld"/>
+        <result property="status" column="status"/>
+        <result property="statusDetail" column="status_detail"/>
+        <result property="jsonData" column="json_data"/>
+        <result property="touchTime" column="touch_time"/>
+        <result property="actionTime" column="action_time"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    
+    <resultMap id="rm_SimpleUserAppData" class="UserAppData">
+        <result property="userId" column="user_id"/>
+        <result property="status"/>
+        <result property="statusDetail" column="status_detail"/>
+    </resultMap>
+    
+    <resultMap id="rm_FriendInfo" class="FriendInfo">
+        <result property="userKey"/>
+    </resultMap>
+    
+    <resultMap id="rm_Comrade" class="Comrade">
+        <result property="userId" column="user_id"/>
+        <result property="jsonData" column="json_data"/>
+        <result property="isFrd" column="isFrd"/>
+        <result property="level" column="level"/>
+        <result property="actionTime" column="action_time"/>
+    </resultMap>
+    
+    <insert id="saveUserAppData" parameterClass="UserAppData">
+        <![CDATA[
+            INSERT INTO $tableName$ (baid, user_id, nick, ulld, status, status_detail, json_data, touch_time, action_time, create_time, update_time) 
+            VALUES (#baid#, #userId#, #nick#, #ulld#, #status#, #statusDetail#, #jsonData#, #touchTime#, #actionTime#, #createTime#, #updateTime#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionUserAppData">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="userId" prepend="AND">
+		<![CDATA[
+                    user_id = #userId#
+		]]>
+            </isNotNull>
+            <isNotNull property="baid" prepend="AND">
+		<![CDATA[
+                    baid = #baid#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findUserAppData" parameterClass="UserAppData" resultMap="rm_UserAppData">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionUserAppData"/>
+    </select>
+    
+    <select id="find_uad_status" parameterClass="UserAppData" resultMap="rm_SimpleUserAppData">
+        <![CDATA[
+            SELECT user_id, status, status_detail FROM $tableName$ where user_id = #userId#
+        ]]>
+    </select>
+    
+    <select id="find_local_friends_with_app_info_by_map" parameterClass="map" resultMap="rm_FriendInfo">
+        <![CDATA[
+            SELECT a.user_id as userKey FROM user_friend uf
+        ]]>
+        <isEqual property="confirm" compareValue="1">
+        	inner join user_app_data a on (a.user_id = uf.fa or a.user_id = uf.fb)
+			where uf.fs = #confirm# and (fa = #userId# or fb = #userId#) and a.user_id != #userId#
+        </isEqual>
+        <isEqual property="confirm" compareValue="0">
+        	inner join user_app_data a on (a.user_id = uf.fa)
+			where uf.fs = #confirm# and (fb = #userId#) and a.user_id != #userId#
+        </isEqual>
+        <isEqual property="snsApp" compareValue="1" prepend="AND">
+        	a.baid = #appId#
+        </isEqual>
+    </select>
+    
+    <select id="count_local_friends_with_app_info_by_map" parameterClass="map" resultClass="long">
+        <![CDATA[
+            SELECT count(*) FROM user_friend uf
+        ]]>
+        <isEqual property="confirm" compareValue="1">
+        	inner join user_app_data a on (a.user_id = uf.fa or a.user_id = uf.fb)
+			where uf.fs = #confirm# and (fa = #userId# or fb = #userId#) and a.user_id != #userId#
+        </isEqual>
+        <isEqual property="confirm" compareValue="0">
+        	inner join user_app_data a on (a.user_id = uf.fa)
+			where uf.fs = #confirm# and (fb = #userId#) and a.user_id != #userId#
+        </isEqual>
+        <isEqual property="snsApp" compareValue="1" prepend="AND">
+        	a.baid = #appId#
+        </isEqual>
+    </select>
+    
+    <select id="count_user_map_by_userId_and_baid" parameterClass="map" resultClass="Long">
+        <![CDATA[
+            SELECT count(1) FROM user_app_data a
+			left join user u on a.user_id = u.id
+			left join user_profile up on a.user_id = up.user_id
+			where 1=1
+        ]]>
+        <isNotEmpty property="rangeList" prepend="AND">
+            a.user_id in
+            <include refid="Example_In_List_Clause" />
+            and a.baid = #baid#
+        </isNotEmpty>
+    </select>
+    
+    <select id="find_friends_user_app_data_as_comrade" parameterClass="map" resultMap="rm_Comrade">
+    	<![CDATA[
+            SELECT a.user_id, a.json_data, 1 as isFrd, 0 as level, now() as action_time FROM user_app_data a, user_friend uf
+            where ((a.user_id = uf.fb and uf.fa = #userId#)
+             or (a.user_id = uf.fa and uf.fb = #userId#))
+             and fs = 1 and baid = #baseId#
+        ]]>
+    </select>
+    
+    <select id="find_risker_user_app_data_as_comrade" parameterClass="map" resultMap="rm_Comrade">
+    	<![CDATA[
+            SELECT a.user_id, a.json_data, 0 as isFrd, 0 as level, now() as action_time FROM user_app_data a
+            where a.baid = #baseId#
+        ]]>
+        <isNotEmpty property="rangeList" prepend="AND">
+            a.user_id not in
+            <include refid="Example_In_List_Clause" />
+        </isNotEmpty>
+        limit #start#, 1
+    </select>
+    
+    <select id="count_risker_user_data_as_comrade" parameterClass="map" resultClass="long">
+    	<![CDATA[
+            SELECT count(*) FROM coc.user_data a
+            where 1=1
+        ]]>
+        <isNotEmpty property="rangeList" prepend="AND">
+            a.user_id not in
+            <include refid="Example_In_List_Clause" />
+        </isNotEmpty>
+    </select>
+    
+    <select id="count_risker_dragon_data_as_comrade" parameterClass="map" resultClass="long">
+    	<![CDATA[
+            SELECT count(1) FROM dragon.dragon_data a
+            where a.level between #levelLimit# and #levelUpper#
+        ]]>
+        <isNotEmpty property="rangeList" prepend="AND">
+            a.user_id not in
+            <include refid="Example_In_List_Clause" />
+        </isNotEmpty>
+    </select>
+    
+    <select id="count_risker_user_app_data_as_comrade" parameterClass="map" resultClass="long">
+    	<![CDATA[
+            SELECT count(*) FROM user_app_data a
+            where a.baid = #baseId#
+        ]]>
+        <isNotEmpty property="rangeList" prepend="AND">
+            a.user_id not in
+            <include refid="Example_In_List_Clause" />
+        </isNotEmpty>
+    </select>
+    
+    <update id="updateUserAppData" parameterClass="UserAppData">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="status" prepend=",">
+		<![CDATA[
+                    status = #status#
+		]]>
+            </isNotNull>
+            <isNotNull property="statusDetail" prepend=",">
+		<![CDATA[
+                    status_detail = #statusDetail#
+		]]>
+            </isNotNull>
+            <isNotNull property="ulld" prepend=",">
+		<![CDATA[
+                    ulld = #ulld#
+		]]>
+            </isNotNull>
+            <isNotNull property="jsonData" prepend=",">
+		<![CDATA[
+                    json_data = #jsonData#
+		]]>
+            </isNotNull>
+            <isNotNull property="touchTime" prepend=",">
+		<![CDATA[
+                    touch_time = #touchTime#
+		]]>
+            </isNotNull>
+            <isNotNull property="actionTime" prepend=",">
+		<![CDATA[
+                    action_time = #actionTime#
+		]]>
+            </isNotNull>
+            <isNotNull property="updateTime" prepend=",">
+		<![CDATA[
+                    update_time = #updateTime#
+		]]>
+            </isNotNull>
+        </dynamic>
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="userId" prepend="AND">
+		<![CDATA[
+                    user_id = #userId#
+		]]>
+            </isNotNull>
+            <isNotNull property="baid" prepend="AND">
+		<![CDATA[
+                    baid = #baid#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </update>
+
+</sqlMap>

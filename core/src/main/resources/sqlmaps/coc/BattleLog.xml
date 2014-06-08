@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="BattleLogSQL">
+    
+    <typeAlias alias="BattleLog" type="com.ngnsoft.ngp.component.coc.model.BattleLog"/>
+    
+    <resultMap id="rm_BattleLogWithoutData" class="BattleLog">
+        <result property="id"/>
+        <result property="attacker"/>
+        <result property="defenser"/>
+        <result property="type"/>
+        <result property="tm" column="tm"/>
+        <result property="trophy" column="trophy"/>
+        <result property="baseData" column="base_data"/>
+        <result property="duration" column="duration"/>
+        <result property="battleTime" column="battle_time"/>
+    </resultMap>
+    
+    <resultMap id="rm_BattleLog" class="BattleLog" extends="rm_BattleLogWithoutData">
+        <result property="jsonData" column="json_data"/>
+    </resultMap>
+    
+    <insert id="saveBattleLog" parameterClass="BattleLog">
+        <![CDATA[
+            INSERT INTO $tableName$ (attacker, defenser, type, tm, trophy, duration, base_data, json_data, battle_time) 
+            VALUES (#attacker#, #defenser#, #type#, #tm#, #trophy#, #duration#, #baseData#, #jsonData#, #battleTime#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionBattleLog">
+        <dynamic prepend="WHERE">
+         	<isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="attacker" prepend="AND">
+		<![CDATA[
+                    attacker = #attacker#
+		]]>
+            </isNotNull>
+            <isNotNull property="defenser" prepend="AND">
+		<![CDATA[
+                    defenser = #defenser#
+		]]>
+            </isNotNull>
+            <isNotNull property="tm" prepend="AND">
+		<![CDATA[
+                    tm = #tm#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findBattleLogWithoutData" parameterClass="BattleLog" resultMap="rm_BattleLogWithoutData">
+        <![CDATA[
+            SELECT id, attacker, defenser, type, tm, trophy, duration, base_data, battle_time FROM $tableName$
+        ]]>
+        <include refid="whereConditionBattleLog"/>
+        order by id desc
+    </select>
+    
+    <select id="findBattleLog" parameterClass="BattleLog" resultMap="rm_BattleLog">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionBattleLog"/>
+        order by id desc
+    </select>
+    
+    <select id="findBattleLogWithoutRevenge" parameterClass="BattleLog" resultMap="rm_BattleLog">
+        <![CDATA[
+            SELECT * FROM $tableName$ where defenser = #defenser# and type != -1
+        ]]>
+        order by id desc
+    </select>
+    
+    <select id="countBattleLog" parameterClass="BattleLog" resultClass="long">
+        <![CDATA[
+            SELECT count(1) FROM $tableName$
+        ]]>
+        <include refid="whereConditionBattleLog"/>
+    </select>
+    
+    <select id="countLogInitTrophy" parameterClass="map" resultClass="long">
+        <![CDATA[
+            SELECT count(1) FROM battle_log where base_data is null
+        ]]>
+    </select>
+    
+    <select id="findBattlesInitTrophy" parameterClass="map" resultMap="rm_BattleLog">
+        <![CDATA[
+            SELECT * FROM battle_log where base_data is null
+        ]]>
+    </select>
+    
+    <update id="updateBattleLog" parameterClass="BattleLog">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="attacker" prepend=",">
+		<![CDATA[
+                    attacker = #attacker#
+		]]>
+            </isNotNull>
+            <isNotNull property="defenser" prepend=",">
+		<![CDATA[
+                    defenser = #defenser#
+		]]>
+            </isNotNull>
+            <isNotNull property="trophy" prepend=",">
+		<![CDATA[
+                    trophy = #trophy#
+		]]>
+            </isNotNull>
+            <isNotNull property="type" prepend=",">
+		<![CDATA[
+                    type = #type#
+		]]>
+            </isNotNull>
+             <isNotNull property="duration" prepend=",">
+		<![CDATA[
+                    duration = #duration#
+		]]>
+            </isNotNull>
+            <isNotNull property="tm" prepend=",">
+		<![CDATA[
+                    tm = #tm#
+		]]>
+            </isNotNull>
+            <isNotNull property="baseData" prepend=",">
+		<![CDATA[
+                    base_data = #baseData#
+		]]>
+            </isNotNull>
+            <isNotNull property="jsonData" prepend=",">
+		<![CDATA[
+                    json_data = #jsonData#
+		]]>
+            </isNotNull>
+            <isNotNull property="battleTime" prepend=",">
+		<![CDATA[
+                    battle_time = #battleTime#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where id = #id#
+    </update>
+    
+</sqlMap>

@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="DataCountSQL">
+    
+    <typeAlias alias="DataCount" type="com.ngnsoft.ngp.component.slots.model.DataCount"/>
+    
+    <resultMap id="rm_DataCount" class="DataCount">
+    	<result property="id" column="id"/>
+    	<result property="type" column="type"/>
+        <result property="userId" column="user_id"/>
+        <result property="i1" column="i1"/>
+        <result property="i2" column="i2"/>
+        <result property="i3" column="i3"/>
+        <result property="i4" column="i4"/>
+        <result property="i5" column="i5"/>
+        <result property="s1" column="s1"/>
+        <result property="s2" column="s2"/>
+        <result property="s3" column="s3"/>
+        <result property="s4" column="s4"/>
+        <result property="s5" column="s5"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+    
+    <insert id="saveDataCount" parameterClass="DataCount">
+        <![CDATA[
+            INSERT INTO $tableName$ (user_id, type, i1, i2, i3, i4, i5, s1, s2, s3, s4, s5, create_time) 
+            VALUES (#userId#, #type#, #i1#, #i2#, #i3#, #i4#, #i5#, #s1#, #s2#, #s3#, #s4#, #s5#, #createTime#)
+        ]]>
+    </insert>
+    
+    <!-- <sql id="whereConditionDataCount">
+        <dynamic prepend="WHERE">
+        	<isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="period" prepend="AND">
+		<![CDATA[
+                    period = #period#
+		]]>
+            </isNotNull>
+            <isNotNull property="curUnit" prepend="AND">
+		<![CDATA[
+                    cur_unit = #curUnit#
+		]]>
+            </isNotNull>
+            <isNotNull property="nextUnit" prepend="AND">
+		<![CDATA[
+                    next_unit = #nextUnit#
+		]]>
+            </isNotNull>
+            <isNotNull property="curTotalHours" prepend="AND">
+		<![CDATA[
+                    cur_total_hours = #curTotalHours#
+		]]>
+            </isNotNull>
+            <isNotNull property="curStatus" prepend="AND">
+		<![CDATA[
+                    cur_status = #curStatus#
+		]]>
+            </isNotNull>
+            <isNotNull property="curType" prepend="AND">
+		<![CDATA[
+                    cur_type = #curType#
+		]]>
+            </isNotNull>
+            <isNotNull property="nextType" prepend="AND">
+		<![CDATA[
+                    next_type = #nextType#
+		]]>
+            </isNotNull>
+            <isNotNull property="nextStatus" prepend="AND">
+		<![CDATA[
+                    next_status = #nextStatus#
+		]]>
+            </isNotNull>
+            <isNotNull property="nextTotalHours" prepend="AND">
+		<![CDATA[
+                    next_total_hours = #nextTotalHours#
+		]]>
+            </isNotNull>
+            <isNotNull property="lastType" prepend="AND">
+		<![CDATA[
+                    last_type = #lastType#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findDataCount" parameterClass="DataCount" resultMap="rm_DataCount">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionDataCount"/>
+    </select>
+    
+    <delete id="removeDataCount" parameterClass="DataCount">
+        <![CDATA[
+            DELETE FROM $tableName$
+        ]]>
+        <include refid="whereConditionDataCount"/>
+    </delete>
+    
+    <update id="updateDataCount" parameterClass="DataCount">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+        	<isNotNull property="period" prepend=",">
+		<![CDATA[
+                    period = #period#
+		]]>
+            </isNotNull>
+            <isNotNull property="curUnit" prepend=",">
+		<![CDATA[
+                    cur_unit = #curUnit#
+		]]>
+            </isNotNull>
+            <isNotNull property="nextUnit" prepend=",">
+		<![CDATA[
+                    next_unit = #nextUnit#
+		]]>
+            </isNotNull>
+            <isNotNull property="curTotalHours" prepend=",">
+		<![CDATA[
+                    cur_total_hours = #curTotalHours#
+		]]>
+            </isNotNull>
+            <isNotNull property="nextTotalHours" prepend=",">
+		<![CDATA[
+                    next_total_hours = #nextTotalHours#
+		]]>
+            </isNotNull>
+            <isNotNull property="refreshStartTime" prepend=",">
+		<![CDATA[
+                    refresh_start_time = #refreshStartTime#
+		]]>
+            </isNotNull>
+            <isNotNull property="bakStartTime" prepend=",">
+		<![CDATA[
+                    bak_start_time = #bakStartTime#
+		]]>
+            </isNotNull>
+            <isNotNull property="curStatus" prepend=",">
+		<![CDATA[
+                    cur_status = #curStatus#
+		]]>
+            </isNotNull>
+            <isNotNull property="curType" prepend=",">
+		<![CDATA[
+                    cur_type = #curType#
+		]]>
+            </isNotNull>
+            <isNotNull property="nextType" prepend=",">
+		<![CDATA[
+                    next_type = #nextType#
+		]]>
+            </isNotNull>
+            <isNotNull property="nextStatus" prepend=",">
+		<![CDATA[
+                    next_status = #nextStatus#
+		]]>
+            </isNotNull>
+            <isNotNull property="updateTime" prepend=",">
+		<![CDATA[
+                    update_time = #updateTime#
+		]]>
+            </isNotNull>
+            <isNotNull property="lastType" prepend=",">
+		<![CDATA[
+                    last_type = #lastType#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where id = #id#
+    </update> -->
+    
+</sqlMap>

@@ -1,0 +1,135 @@
+
+BODY {
+	FONT: 12px/20px Arial, Verdana, Lucida, Helvetica, simsun, sans-serif; COLOR: #313131
+}
+OL {
+	LIST-STYLE-TYPE: none
+}
+UL {
+	LIST-STYLE-TYPE: none
+}
+A {
+	COLOR: #016a9f; TEXT-DECORATION: none
+}
+A:hover {
+	TEXT-DECORATION: underline
+}
+.playpic {
+	DISPLAY: block; OVERFLOW: hidden; ZOOM: 1; POSITION: relative
+}
+.playpic IMG {
+	BORDER-RIGHT: #eae4d1 1px solid; PADDING-RIGHT: 2px; BORDER-TOP: #eae4d1 1px solid; DISPLAY: block; PADDING-LEFT: 2px; PADDING-BOTTOM: 2px; BORDER-LEFT: #eae4d1 1px solid; PADDING-TOP: 2px; BORDER-BOTTOM: #eae4d1 1px solid
+}
+.playpic SPAN {
+	PADDING-RIGHT: 3px; PADDING-LEFT: 3px; LEFT: 3px; PADDING-BOTTOM: 0px; WIDTH: 80px; COLOR: #fff; LINE-HEIGHT: 15px; PADDING-TOP: 0px; POSITION: absolute; TOP: 109px; HEIGHT: 15px; TEXT-ALIGN: right
+}
+.playpic SPAN.bg {
+	BACKGROUND: none transparent scroll repeat 0% 0%; FILTER: progid:DXImageTransform.Microsoft.gradient(startColorStr=#00000000, endColorStr=#99000000, gradientType='1')
+}
+.movList3 {
+	OVERFLOW: hidden; WIDTH: 100%; ZOOM: 1
+}
+.movList3 UL.movList3_ul {
+	OVERFLOW: hidden; WIDTH: 730px; LINE-HEIGHT: 20px; POSITION: relative
+}
+.movList3 UL.movList3_ul LI {
+	PADDING-RIGHT: 0px; DISPLAY: inline; PADDING-LEFT: 110px; FLOAT: left; PADDING-BOTTOM: 10px; MARGIN: 0px 20px 0px 10px; OVERFLOW: hidden; WIDTH: 225px; WORD-BREAK: break-all; PADDING-TOP: 10px; POSITION: relative; HEIGHT: 140px
+}
+.movList3 UL.movList3_ul LI .playpic {
+	LEFT: 0px; WIDTH: 106px; POSITION: absolute; TOP: 10px; HEIGHT: 146px
+}
+.movList3 UL.movList3_ul LI H3 {
+	PADDING-RIGHT: 92px; FONT-SIZE: 13px; OVERFLOW: hidden; LINE-HEIGHT: 24px; HEIGHT: 24px
+}
+.movList3 UL.movList3_ul LI H3 SPAN {
+	FONT-WEIGHT: normal; FONT-SIZE: 10px; COLOR: #939393
+}
+.movList3 UL.movList3_ul LI UL.movList3_ul_ul {
+	CLEAR: both; PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; OVERFLOW: hidden; WIDTH: 240px; COLOR: #d6d3d3; PADDING-TOP: 0px
+}
+.movList3 UL.movList3_ul LI UL.movList3_ul_ul LI {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; FLOAT: left; PADDING-BOTTOM: 0px; MARGIN: 0px 5px 0px 0px; OVERFLOW: hidden; WIDTH: 110px; PADDING-TOP: 0px; HEIGHT: 20px
+}
+.movList3 UL.movList3_ul LI UL.movList3_ul_ul LI STRONG {
+	FONT-WEIGHT: normal; COLOR: #5f5f5f
+}
+.movList3 UL.movList3_ul LI UL.movList3_ul_ul LI SPAN {
+	MARGIN: auto 2px; COLOR: #5f5f5f
+}
+.movList3 UL.movList3_ul LI UL.movList3_ul_ul LI SPAN.grade {
+	FONT-WEIGHT: bold; FONT-SIZE: 11px; COLOR: #ff7e00
+}
+.movList3 UL.movList3_ul LI UL.movList3_ul_ul LI SPAN.grade STRONG {
+	FONT-WEIGHT: bold; FONT-SIZE: 12px; COLOR: #ff7e00; LINE-HEIGHT: 20px
+}
+.movList3 UL.movList3_ul LI UL.movList3_ul_ul LI A {
+	MARGIN: auto 2px
+}
+.movList3 UL.movList3_ul LI UL.movList3_ul_ul LI.playactor {
+	WIDTH: 230px
+}
+.movList3 UL.movList3_ul LI .mov-op {
+	CLEAR: both; PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 5px auto; PADDING-TOP: 0px; TEXT-ALIGN: left
+}
+.movList3 UL.movList3_ul LI .mov-op A {
+	BACKGROUND: url(../img/icon.png) no-repeat; FLOAT: left; OVERFLOW: hidden; WIDTH: 41px; TEXT-INDENT: 100px; MARGIN-RIGHT: 10px; HEIGHT: 18px
+}
+.movList3 UL.movList3_ul LI .mov-op .mov-watch {
+	BACKGROUND-POSITION: 0px -432px
+}
+
+
+.yn_playpic SPAN {
+	LEFT: 4px; WIDTH: 92px; TOP: 128px
+}
+.movList3 UL.movList3_ul LI .num_con {
+	DISPLAY: inline; FLOAT: right; MARGIN: -22px 14px 0px 0px
+}
+.movList3 UL.movList3_ul LI .num_con SPAN {
+	FONT-SIZE: 11px; COLOR: #ec6022
+}
+.movList3 UL.movList3_ul LI .num_con SPAN STRONG {
+	FONT-SIZE: 13px
+}
+.movList3 UL.movList3_ul LI .num_con EM {
+	COLOR: #919191; FONT-STYLE: normal
+}
+.movList3 UL.movList3_ul LI .num_con EM EM {
+	FONT-SIZE: 10px; COLOR: #4c4c4c
+}
+.movList3 UL.movList3_ul LI .num_con A {
+	PADDING-RIGHT: 2px; DISPLAY: block; PADDING-LEFT: 2px; FONT-SIZE: 0px; RIGHT: 0px; BACKGROUND: url(../img/icon.png) no-repeat -142px -445px; PADDING-BOTTOM: 2px; WIDTH: 8px; TEXT-INDENT: -9999px; LINE-HEIGHT: 0; PADDING-TOP: 2px; POSITION: absolute; TOP: 18px; HEIGHT: 5px
+}
+.q_l {
+	DISPLAY: inline-block; FONT-SIZE: 0px; BACKGROUND: url(../img/q.png) no-repeat 0px 0px; MARGIN: 0px 3px 0px 0px; WIDTH: 11px; LINE-HEIGHT: 0; POSITION: absolute; HEIGHT: 9px
+}
+.q_r {
+	DISPLAY: inline-block; FONT-SIZE: 0px; BACKGROUND: url(../img/q.png) no-repeat 0px 0px; MARGIN: 0px 3px 0px 0px; WIDTH: 11px; LINE-HEIGHT: 0; POSITION: absolute; HEIGHT: 9px
+}
+.q_r {
+	BACKGROUND-POSITION: -11px 0px
+}
+.movList3 UL.movList3_ul LI .des {
+	PADDING-RIGHT: 13px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 5px 0px 7px; OVERFLOW: hidden; LINE-HEIGHT: 14px; PADDING-TOP: 0px; HEIGHT: 14px
+}
+.movList3 UL.movList3_ul LI .des .des_span {
+	PADDING-RIGHT: 2px; DISPLAY: inline-block; PADDING-LEFT: 13px; PADDING-BOTTOM: 0px; PADDING-TOP: 0px
+}
+.movList3 UL.movList3_ul LI .mov-op {
+	CLEAR: none; DISPLAY: inline; FLOAT: left; MARGIN: 7px 0px 0px; OVERFLOW: hidden; WIDTH: 46px
+}
+.movList3 UL.movList3_ul LI .oper {
+	MARGIN-TOP: 5px; DISPLAY: inline; FLOAT: left; WIDTH: 170px; COLOR: #c5c5c5; TEXT-ALIGN: left
+}
+.movList3 UL.movList3_ul LI .oper A {
+	MARGIN: 0px 6px; TEXT-DECORATION: underline
+}
+.movList3 UL.movList3_ul LI .oper A:hover {
+	TEXT-DECORATION: none
+}
+.movList3 UL.movList3_ul LI .oper SPAN {
+	FONT-SIZE: 11px; MARGIN: 0px 6px 0px -6px; COLOR: #939393
+}
+.movList3 UL.movList3_ul LI .oper SPAN SPAN {
+	MARGIN: 0px; COLOR: #4c4c4c
+}

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="LoginUserSQL">
+    
+    <typeAlias alias="LoginUser" type="com.ngnsoft.ngp.model.LoginUser"/>
+
+    <resultMap id="rm_LoginUser" class="LoginUser">  
+        <result property="id" javaType="long"/>
+        <result property="username"/>
+        <result property="password"/>
+        <result property="type"/>
+        <result property="status"/>
+        <result property="lastLoginTime" column="last_login_time"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    
+    <insert id="saveLoginUser" parameterClass="LoginUser">
+        <![CDATA[
+            INSERT INTO $tableName$ (id, username, password, type, status, last_login_time, create_time, update_time) 
+            VALUES (#id#, #username#, #password#, #type#, #status#, #lastLoginTime#, #createTime#, #updateTime#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionLoginUser">
+	<dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="username" prepend="AND">
+		<![CDATA[
+                    username = #username#
+		]]>
+            </isNotNull>
+            <isNotNull property="password" prepend="AND">
+		<![CDATA[
+                    password = #password#
+		]]>
+            </isNotNull>
+            <isNotNull property="status" prepend="AND">
+		<![CDATA[
+                    status = #status#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findLoginUser" parameterClass="LoginUser" resultMap="rm_LoginUser">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionLoginUser"/>
+    </select>
+    
+    <delete id="removeLoginUser" parameterClass="LoginUser">
+        <![CDATA[
+            DELETE FROM $tableName$
+        ]]>
+        <include refid="whereConditionLoginUser"/>
+    </delete>
+    
+</sqlMap>

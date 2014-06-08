@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="MessageSQL">
+    
+    <typeAlias alias="Message" type="com.ngnsoft.ngp.model.Message"/>
+    
+    <resultMap id="rm_Message" class="Message">
+        <result property="id"/>
+        <result property="from" column="from_uid"/>
+        <result property="to" column="to_uid"/>
+        <result property="title"/>
+        <result property="body" />
+        <result property="attach" />
+        <result property="attachStatus" column="attach_status"/>
+        <result property="type" />
+        <result property="status" />
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+    
+    <insert id="saveMessage" parameterClass="Message">
+        <![CDATA[
+            INSERT INTO $tableName$ (from_uid, to_uid, title, body, attach, attach_status, type, status, create_time) 
+            VALUES (#from#, #to#, #title#, #body#, #attach#, #attachStatus#, #type#, #status#, #createTime#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionMessage">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="from" prepend="AND">
+		<![CDATA[
+                    from_uid = #from#
+		]]>
+            </isNotNull>
+            <isNotNull property="to" prepend="AND">
+		<![CDATA[
+                    to_uid = #to#
+		]]>
+            </isNotNull>
+            <isNotNull property="type" prepend="AND">
+		<![CDATA[
+                    type = #type#
+		]]>
+            </isNotNull>
+            <isNotNull property="status" prepend="AND">
+		<![CDATA[
+                    status = #status#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findMessage" parameterClass="Message" resultMap="rm_Message">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionMessage"/>
+    </select>
+    
+    <select id="find_message_by_type" parameterClass="Message" resultMap="rm_Message">
+    	 <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <dynamic prepend="WHERE">
+			  <isNotNull property="type" prepend="AND">
+		<![CDATA[
+                    type = #type#
+		]]>
+            </isNotNull>
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id >= #id#
+		]]>
+            </isNotNull>   
+        </dynamic>
+        GROUP BY create_time DESC
+    </select>
+    
+    <select id="countMessage" resultClass="long" parameterClass="Message">
+  		<![CDATA[
+            SELECT count(*) FROM $tableName$
+        ]]>
+        <include refid="whereConditionMessage"/>
+  	</select>
+    
+    <update id="updateMessage" parameterClass="Message">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="status" prepend=",">
+		<![CDATA[
+                    status = #status#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where id = #id#
+    </update>
+    
+    <delete id="removeMessage" parameterClass="Message">
+        <![CDATA[
+            DELETE FROM $tableName$
+        ]]>
+        <include refid="whereConditionMessage"/>
+    </delete>
+    
+</sqlMap>

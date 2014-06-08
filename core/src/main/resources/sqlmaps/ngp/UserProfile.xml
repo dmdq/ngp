@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="UserProfileSQL">
+    
+    <typeAlias alias="UserProfile" type="com.ngnsoft.ngp.model.UserProfile"/>
+    
+    <resultMap id="rm_UserProfile" class="UserProfile">
+        <result property="userId" column="user_id"/>
+        <result property="country"/>
+        <result property="age"/>
+        <result property="gender"/>
+        <result property="avatar" column="avatar_urn"/>
+        <result property="email"/>
+        <result property="mobile"/>
+        <result property="jsonAll" column="json_all"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    
+    <resultMap id="rm_userProfile_with_account" class="UserProfile">
+   	    <result property="userId" column="user_id"/>
+    	<result property="userAccount.coin" column="coin"/>
+    	<result property="jsonAll" column="json_all"/>
+    </resultMap>
+    
+    <insert id="saveUserProfile" parameterClass="UserProfile">
+        <![CDATA[
+            INSERT INTO $tableName$ (user_id, country, age, gender, avatar_urn, email, mobile, json_all, update_time) 
+            VALUES (#userId#, #country#, #age#, #gender#, #avatar#, #email#, #mobile#, #jsonAll#, #updateTime#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionUserProfile">
+        <dynamic prepend="WHERE">
+            <isNotNull property="userId" prepend="AND">
+		<![CDATA[
+                    user_id = #userId#
+		]]>
+            </isNotNull>
+            <isNotNull property="country" prepend="AND">
+		<![CDATA[
+                    country = #country#
+		]]>
+            </isNotNull>
+            <isNotNull property="gender" prepend="AND">
+		<![CDATA[
+                    gender = #gender#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findUserProfile" parameterClass="UserProfile" resultMap="rm_UserProfile">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionUserProfile"/>
+    </select>
+    
+    <select id="find_userProfile_with_account" parameterClass="map" resultMap="rm_userProfile_with_account">
+    	<![CDATA[
+            SELECT if(up.coin, null, 0) as coin, if(ua.json_all, null, '{}') as json_all, u.id as user_id from user as u
+            LEFT JOIN  user_profile as ua on u.id = ua.user_id
+			LEFT JOIN user_account up on up.user_id = u.id 
+			where 1=1
+        ]]>
+        <isNotEmpty property="rangeList" prepend="AND">
+            u.id in
+            <include refid="Example_In_List_Clause"/>
+        </isNotEmpty>
+    </select>
+    
+    <update id="updateUserProfile" parameterClass="UserProfile">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="country" prepend=",">
+		<![CDATA[
+                    country = #country#
+		]]>
+            </isNotNull>
+            <isNotNull property="age" prepend=",">
+		<![CDATA[
+                    age = #age#
+		]]>
+            </isNotNull>
+             <isNotNull property="gender" prepend=",">
+		<![CDATA[
+                    gender = #gender#
+		]]>
+            </isNotNull>
+             <isNotNull property="avatar" prepend=",">
+		<![CDATA[
+                    avatar_urn = #avatar#
+		]]>
+            </isNotNull>
+            <isNotNull property="email" prepend=",">
+		<![CDATA[
+                    email = #email#
+		]]>
+            </isNotNull>
+            <isNotNull property="mobile" prepend=",">
+		<![CDATA[
+                    mobile = #mobile#
+		]]>
+            </isNotNull>
+            <isNotNull property="jsonAll" prepend=",">
+		<![CDATA[
+                    json_all = #jsonAll#
+		]]>
+            </isNotNull>
+            <isNotNull property="updateTime" prepend=",">
+		<![CDATA[
+                    update_time = #updateTime#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where user_id = #userId#
+    </update>
+
+</sqlMap>

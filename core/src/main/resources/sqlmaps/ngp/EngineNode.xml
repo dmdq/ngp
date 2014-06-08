@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="EngineNodeSQL">
+    
+    <typeAlias alias="EngineNode" type="com.ngnsoft.ngp.model.EngineNode"/>
+
+    <resultMap id="rm_engine_base" class="EngineNode">  
+    	<result property="id"/>
+        <result property="name"/>
+        <result property="load" column="rated"/>
+        <result property="loading"/>
+        <result property="host"/>
+        <result property="status"/>
+        <result property="statusDesc" column="status_desc"/>
+        <result property="statusLock" column="status_lock"/>
+        <result property="touchTime" column="touch_time"/>
+    </resultMap>
+    
+    <insert id="saveEngineNode" parameterClass="EngineNode">
+        <![CDATA[
+            INSERT INTO $tableName$ (id, name, rated, loading, host, status, status_desc, status_lock, touch_time) 
+            VALUES (#id#, #name#, #load#, #loading#, #host#, #status#, #statusDesc#, #statusLock#, #touchTime#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionEngineNode">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]> 
+            </isNotNull>
+            <isNotNull property="name" prepend="AND">
+		<![CDATA[
+                    name like '%$name$%'
+		]]>
+            </isNotNull>
+            <isNotNull property="status" prepend="AND">
+		<![CDATA[
+                    status = #status#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findEngineNode" parameterClass="EngineNode" resultMap="rm_engine_base">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionEngineNode"/>
+    </select>
+    
+    <select id="countEngineNode" resultClass="long" parameterClass="EngineNode">
+  		<![CDATA[
+            SELECT count(*) FROM $tableName$
+        ]]>
+        <include refid="whereConditionEngineNode"/>
+  	</select>
+    
+    <delete id="removeEngineNode" parameterClass="EngineNode">
+        <![CDATA[
+            DELETE FROM $tableName$
+        ]]>
+        <include refid="whereConditionEngineNode"/>
+    </delete>
+    
+    <update id="updateEngineNode" parameterClass="EngineNode">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+	    <isNotNull property="name" prepend=",">
+		<![CDATA[
+                    name = #name#
+		]]>
+            </isNotNull>
+            <isNotNull property="load" prepend=",">
+		<![CDATA[
+                    rated = #load#
+		]]>
+            </isNotNull>
+            <isNotNull property="loading" prepend=",">
+		<![CDATA[
+                    loading = #loading#
+		]]>
+            </isNotNull>
+            <isNotNull property="host" prepend=",">
+		<![CDATA[
+                    host = #host#
+		]]>
+            </isNotNull>
+            <isNotNull property="status" prepend=",">
+		<![CDATA[
+                    status = #status#
+		]]>
+            </isNotNull>
+             <isNotNull property="statusDesc" prepend=",">
+		<![CDATA[
+                    status_desc = #statusDesc#
+		]]>
+            </isNotNull>
+            <isNotNull property="statusLock" prepend=",">
+		<![CDATA[
+                    status_lock = #statusLock#
+		]]>
+            </isNotNull>
+            <isNotNull property="touchTime" prepend=",">
+		<![CDATA[
+                    touch_time = #touchTime#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where id = #id#
+    </update>
+
+</sqlMap>

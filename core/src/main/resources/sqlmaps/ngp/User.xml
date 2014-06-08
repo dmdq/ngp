@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="UserSQL">
+    
+    <typeAlias alias="User" type="com.ngnsoft.ngp.model.User"/>
+    <typeAlias alias="UserShow" type="com.ngnsoft.ngp.model.show.UserShow"/>
+    
+    <resultMap id="rm_User" class="User">  
+        <result property="id"/>
+        <result property="name"/>
+        <result property="nick"/>
+        <result property="opswd"/>
+        <result property="epswd"/>
+        <result property="type"/>
+        <result property="status"/>
+        <result property="statusDetail" column="status_detail"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    
+    <resultMap id="rm_UserShow" class="UserShow" extends="rm_User">  
+    </resultMap>
+    
+    <resultMap id="rm_user_with_account" class="User" extends="rm_User">
+        <result property="userAccount.coin" column="coin"/>
+        <result property="userAccount.coinReset" column="coin_reset"/>
+    </resultMap>
+    
+    <insert id="saveUser" parameterClass="User">
+        <![CDATA[
+            INSERT INTO $tableName$ (name, nick, opswd, epswd, type, status, status_detail, create_time, update_time) 
+            VALUES (#name#, #nick#, #opswd#, #epswd#, #type#, #status#, #statusDetail#, #createTime#, #updateTime#)
+        ]]>
+        <selectKey resultClass="java.lang.Long" keyProperty="id" type="post">
+            select last_insert_id();
+        </selectKey>
+    </insert>
+               
+    <insert id="saveRobot" parameterClass="User">
+        <![CDATA[
+            INSERT INTO user (id,type,status,create_time,update_time) select if((MIN(id)) > 100000, 100000-1,(MIN(id)-1)),0,0,NOW(),NOW() from user
+        ]]>
+         <selectKey resultClass="Long" keyProperty="id" >
+            SELECT MIN(id) as id FROM user
+        </selectKey> 
+    </insert>
+    
+    <sql id="whereConditionUser">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="name" prepend="AND">
+		<![CDATA[
+                    name = #name#
+		]]>
+            </isNotNull>
+            <isNotNull property="nick" prepend="AND">
+		<![CDATA[
+                    nick = #nick#
+		]]>
+            </isNotNull>
+            <isNotNull property="type" prepend="AND">
+		<![CDATA[
+                    type = #type#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findUser" parameterClass="User" resultMap="rm_User">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionUser"/>
+    </select>
+    
+    <select id="find_user_by_userId" parameterClass="UserShow" resultMap="rm_UserShow">
+        <![CDATA[
+            SELECT * FROM user where id < 100000
+        ]]>
+    </select>
+    
+    <select id="count_user_by_userId" parameterClass="User" resultClass="long">
+        <![CDATA[
+            SELECT count(*) FROM $tableName$ where id < 100000
+        ]]>
+    </select>
+    
+    <select id="find_user_with_account" parameterClass="User" resultMap="rm_user_with_account">
+        <![CDATA[
+            SELECT a.*, b.coin, b.coin_reset FROM $tableName$ a left join user_account b on a.id = b.user_id
+        ]]>
+        <include refid="whereConditionUser"/>
+    </select>
+    
+    <select id="countUser" parameterClass="User" resultClass="long">
+        <![CDATA[
+            SELECT count(*) FROM $tableName$
+        ]]>
+        <include refid="whereConditionUser"/>
+    </select>
+
+	<update id="updateUser" parameterClass="User">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="name" prepend=",">
+		<![CDATA[
+                    name = #name#
+		]]>
+            </isNotNull>
+            <isNotNull property="nick" prepend=",">
+		<![CDATA[
+                    nick = #nick#
+		]]>
+            </isNotNull>
+            <isNotNull property="opswd" prepend=",">
+		<![CDATA[
+                    opswd = #opswd#
+		]]>
+            </isNotNull>
+            <isNotNull property="epswd" prepend=",">
+		<![CDATA[
+                    epswd = #epswd#
+		]]>
+            </isNotNull>
+            <isNotNull property="type" prepend=",">
+		<![CDATA[
+                    type = #type#
+		]]>
+            </isNotNull>
+            <isNotNull property="status" prepend=",">
+		<![CDATA[
+                    status = #status#
+		]]>
+            </isNotNull>
+            <isNotNull property="statusDetail" prepend=",">
+		<![CDATA[
+                    status_detail = #statusDetail#
+		]]>
+            </isNotNull>
+            <isNotNull property="updateTime" prepend=",">
+		<![CDATA[
+                    update_time = #updateTime#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where id = #id#
+    </update>
+	
+	<delete id="removeUser" parameterClass="User">
+        <![CDATA[
+            DELETE FROM $tableName$
+        ]]>
+        <include refid="whereConditionUser"/>
+    </delete>
+	
+</sqlMap>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="FileStorageSQL">
+    
+    <typeAlias alias="FileStorage" type="com.ngnsoft.ngp.model.FileStorage"/>
+
+    <insert id="saveFileStorage" parameterClass="FileStorage">
+        <![CDATA[
+            INSERT INTO $tableName$ (id, name, urn, data)
+            VALUES (#id#, #name#, #urn#, #data#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionFileStorage">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="name" prepend="AND">
+		<![CDATA[
+                    name like '%$name$%'
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findFileStorage" parameterClass="FileStorage" resultClass="FileStorage">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionFileStorage"/>
+    </select>
+    
+    <update id="updateFileStorage" parameterClass="FileStorage">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="name" prepend=",">
+		<![CDATA[
+                    name = #name#
+		]]>
+            </isNotNull>
+            <isNotNull property="urn" prepend=",">
+		<![CDATA[
+                    urn = #urn#
+		]]>
+            </isNotNull>
+             <isNotNull property="data" prepend=",">
+		<![CDATA[
+                    data = #data#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where id = #id#
+    </update>
+    
+    <select id="countFileStorage" parameterClass="FileStorage" resultClass="long">
+        <![CDATA[
+            SELECT count(*) FROM $tableName$
+        ]]>
+        <include refid="whereConditionFileStorage"/>
+    </select>
+    
+    <delete id="removeFileStorage" parameterClass="FileStorage">
+        <![CDATA[
+            DELETE FROM $tableName$
+        ]]>
+        <include refid="whereConditionFileStorage"/>
+    </delete>
+</sqlMap>

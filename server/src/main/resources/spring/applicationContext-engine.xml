@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-3.2.xsd"
+       default-lazy-init="true">
+
+    <!-- Activates scanning of @Controller -->
+    <context:component-scan base-package="com.ngnsoft.ngp.protocol"/>
+    
+    <bean id="defaultComponent" class="com.ngnsoft.ngp.component.AppComponent"/>
+    
+    <bean id="componentManager" class="com.ngnsoft.ngp.component.service.impl.ComponentManagerImpl"/>
+    
+    <bean id="engineConfig" class="com.ngnsoft.ngp.EngineConfig">
+        <property name="id" value="${engine.id}"/>
+        <property name="load" value="${engine.load}"/>
+        <property name="protocol" value="${protocol}"/>
+        <property name="serverPort" value="${server.port}"/>
+        <property name="serverContext" value="${server.context}"/>
+        <property name="fileServer" value="${file.server}"/>
+        <property name="ipDataFile" value="${ip.data.file}"/>
+        <property name="ipLicenseFile" value="${ip.license.file}"/>
+        <property name="certPath" value="${cert.path}"/>
+        <property name="prodStage" value="${prod.stage}"/>
+        <property name="lsenEnable" value="${lsen.enable}"/>
+        <property name="ucEnable" value="${uc.enable}"/>
+    </bean>
+    
+    <!--bean name="engineNodeJob" class="com.ngnsoft.ngp.timer.job.EngineNodeJob">
+        <property name="engineId" value="${engine.id}"/>
+        <property name="lsenEnable" value="${lsen.enable}"/>
+    </bean-->
+    
+    <bean name="engineHealthJob" class="com.ngnsoft.ngp.timer.job.EngineHealthJob">
+        <property name="engineId" value="${engine.id}"/>
+    </bean>
+    
+    <bean name="engineMonitorJob" class="com.ngnsoft.ngp.timer.job.EngineMonitorJob">
+        <property name="engineId" value="${engine.id}"/>
+        <property name="lsenEnable" value="${lsen.enable}"/>
+    </bean>
+    
+    <bean name="userSessionJob" class="com.ngnsoft.ngp.timer.job.UserSessionJob">
+        <property name="engineId" value="${engine.id}"/>
+        <property name="ucEnable" value="${uc.enable}"/>
+    </bean>
+
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <property name="host" value="${mail.host}"/>
+        <property name="port" value="${mail.port}"/>
+        <property name="defaultEncoding" value="UTF-8"/>
+        <!-- Uncomment if you need to authenticate with your SMTP Server -->
+        <property name="username" value="${mail.username}"/>
+        <property name="password" value="${mail.password}"/>
+        <property name="javaMailProperties">
+            <value>
+                mail.smtp.auth=true
+            </value>
+        </property>
+    </bean>
+    
+    <bean id="mailMessage" class="org.springframework.mail.SimpleMailMessage" scope="prototype">
+        <property name="from" value="${mail.from}"/>
+        <property name="to" value="${mail.to}" />
+        <property name="subject" value="${mail.subject}"/>
+        <property name="text" value="${mail.content}"/>
+    </bean>
+
+</beans>

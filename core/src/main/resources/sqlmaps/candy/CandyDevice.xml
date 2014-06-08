@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="CandyDeviceSQL">
+    
+    <typeAlias alias="CandyDevice" type="com.ngnsoft.ngp.component.candy.model.CandyDevice"/>
+    
+    <resultMap id="rm_CandyDevice" class="CandyDevice">  
+        <result property="id" column="id"/>
+        <result property="appVersion" column="app_version"/>
+        <result property="model" column="model"/>
+        <result property="osVersion" column="os_version"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+    
+    <insert id="saveCandyDevice" parameterClass="CandyDevice">
+        <![CDATA[
+            INSERT INTO $tableName$ (id, app_id, app_version, model, os_version, create_time) 
+            VALUES (#id#, #appId#, #appVersion#, #model#, #osVersion#, #createTime#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionCandyDevice">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="appId" prepend="AND">
+		<![CDATA[
+                    app_id = #appId#
+		]]>
+            </isNotNull>
+            <isNotNull property="model" prepend="AND">
+		<![CDATA[
+                    model = #model#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findCandyDevice" parameterClass="CandyDevice" resultMap="rm_CandyDevice">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionCandyDevice"/>
+    </select>
+    
+    <select id="countCandyDevice" resultClass="long" parameterClass="CandyDevice">
+  		<![CDATA[
+            SELECT count(*) FROM $tableName$
+        ]]>
+        <include refid="whereConditionCandyDevice"/>
+  	</select>
+    
+    <delete id="removeCandyDevice" parameterClass="CandyDevice">
+        <![CDATA[
+            DELETE FROM $tableName$
+        ]]>
+        <include refid="whereConditionCandyDevice"/>
+    </delete>
+    
+    <update id="updateCandyDevice" parameterClass="CandyDevice">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="appId" prepend=",">
+		<![CDATA[
+                    app_id = #appId#
+		]]>
+            </isNotNull>
+            <isNotNull property="appVersion" prepend=",">
+		<![CDATA[
+                    app_version = #appVersion#
+		]]>
+            </isNotNull>
+            <isNotNull property="model" prepend=",">
+		<![CDATA[
+                    model = #model#
+		]]>
+            </isNotNull>
+            <isNotNull property="osVersion" prepend=",">
+		<![CDATA[
+                    os_version = #osVersion#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where id = #id#
+    </update>
+    
+    <!-- <update id="update_device_for_updv" parameterClass="">
+        <![CDATA[
+            UPDATE 
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="mac" prepend=",">
+		<![CDATA[
+                    mac = #mac#
+		]]>
+            </isNotNull>
+            <isNotNull property="brand" prepend=",">
+		<![CDATA[
+                    brand = #brand#
+		]]>
+            </isNotNull>
+            <isNotNull property="model" prepend=",">
+		<![CDATA[
+                    model = #model#
+		]]>
+            </isNotNull>
+            <isNotNull property="os" prepend=",">
+		<![CDATA[
+                    os = #os#
+		]]>
+            </isNotNull>
+            <isNotNull property="macId" prepend=",">
+		<![CDATA[
+                    mac_id = #macId#
+		]]>
+            </isNotNull>
+            <isNotNull property="udid" prepend=",">
+		<![CDATA[
+                    udid = #udid#
+		]]>
+            </isNotNull>
+            <isNotNull property="openUdid" prepend=",">
+		<![CDATA[
+                    open_udid = #openUdid#
+		]]>
+            </isNotNull>
+            <isNotNull property="idfa" prepend=",">
+		<![CDATA[
+                    idfa = #idfa#
+		]]>
+            </isNotNull>
+        </dynamic>
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="OR">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="macId" prepend="OR">
+		<![CDATA[
+                    mac_id = #macId#
+		]]>
+            </isNotNull>
+            <isNotNull property="udid" prepend="OR">
+		<![CDATA[
+                    udid = #udid#
+		]]>
+            </isNotNull>
+            <isNotNull property="openUdid" prepend="OR">
+		<![CDATA[
+                    open_udid = #openUdid#
+		]]>
+            </isNotNull>
+            <isNotNull property="idfa" prepend="OR">
+		<![CDATA[
+                    idfa = #idfa#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </update> -->
+
+</sqlMap>

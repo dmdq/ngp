@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="UserAppSQL">
+    
+    <typeAlias alias="UserApp" type="com.ngnsoft.ngp.model.UserApp"/>
+    
+    <resultMap id="rm_UserApp" class="UserApp">
+        <result property="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="appId" column="app_id"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+    
+    <insert id="saveUserApp" parameterClass="UserApp">
+        <![CDATA[
+            INSERT INTO $tableName$ (user_id, app_id, create_time) 
+            VALUES (#userId#, #appId#, #createTime#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionUserApp">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="userId" prepend="AND">
+		<![CDATA[
+                    user_id = #userId#
+		]]>
+            </isNotNull>
+            <isNotNull property="appId" prepend="AND">
+		<![CDATA[
+                    app_id = #appId#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findUserApp" parameterClass="UserApp" resultMap="rm_UserApp">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionUserApp"/>
+    </select>
+
+</sqlMap>

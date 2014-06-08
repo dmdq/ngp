@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="UserFriendSQL">
+    
+    <typeAlias alias="UserFriend" type="com.ngnsoft.ngp.model.UserFriend"/>
+    
+    <resultMap id="rm_UserFriend" class="UserFriend">  
+        <result property="id"/>
+        <result property="fa"/>
+        <result property="fb"/>
+        <result property="fs"/>
+        <result property="msg"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+    
+    <insert id="saveUserFriend" parameterClass="UserFriend">
+        <![CDATA[
+            INSERT INTO $tableName$ (fa, fb, fs, msg, create_time) 
+            VALUES (#fa#, #fb#, #fs#, #msg#, #createTime#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionUserFriend">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findUserFriend" parameterClass="UserFriend" resultMap="rm_UserFriend">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionUserFriend"/>
+    </select>
+    
+    <select id="find_userFriends_by_fa_or_fb" parameterClass="map" resultMap="rm_UserFriend">
+        <![CDATA[
+            SELECT * FROM user_friend
+            where 
+            (fa = #userId# and fb = #snsId#)
+            or (fa = #snsId# and fb = #userId#)
+        ]]>
+    </select>
+    
+    <select id="find_user_friend_by_ua_and_ub" parameterClass="map" resultMap="rm_UserFriend">
+        <![CDATA[
+            SELECT * FROM user_friend
+            where 
+            (fa = #ua# and fb = #ub# and fs = 1)
+            or (fa = #ub# and fb = #ua# and fs = 1)
+        ]]>
+    </select>
+    
+    <select id="find_all_friends_by_userId" parameterClass="map" resultMap="rm_UserFriend">
+    	<![CDATA[
+            SELECT uf.* FROM user_friend uf
+            WHERE (fa = #userId# or (fb = #userId# and ft = #idKey#)) and fs = 1
+        ]]>
+        <isNotNull property="sns" prepend="AND">
+        	ft = #sns# 
+        </isNotNull>
+    </select>
+    
+    <select id="find_local_friends_without_app_info_by_map" parameterClass="map" resultMap="rm_UserFriend">
+        <![CDATA[
+            SELECT uf.* FROM user_friend uf
+        ]]>
+        <isEqual property="confirm" compareValue="1">
+       		 where uf.fs = #confirm# and (fa = #userId# or fb = #userId#)
+        </isEqual>
+        <isEqual property="confirm" compareValue="0">
+       		 where uf.fs = #confirm# and (fb = #userId#)
+        </isEqual>
+    </select>
+    
+    <select id="count_local_friends_without_app_info_by_map" parameterClass="map" resultClass="long">
+        <![CDATA[
+            SELECT count(*) FROM user_friend uf
+        ]]>
+        <isEqual property="confirm" compareValue="1">
+       		 where uf.fs = #confirm# and (fa = #userId# or fb = #userId#)
+        </isEqual>
+        <isEqual property="confirm" compareValue="0">
+       		 where uf.fs = #confirm# and (fb = #userId#)
+        </isEqual>
+    </select>
+    
+    <update id="updateUserFriend" parameterClass="UserFriend">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="fs" prepend=",">
+		<![CDATA[
+                    fs = #fs#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where id = #id#
+    </update>
+    
+    <update id="update_confirm_friend_automatic" parameterClass="map">
+        <![CDATA[
+            update user_friend set fs = 1 where fb < #robotId# and fs = 0
+        ]]>
+    </update>
+    
+    <delete id="removeUserFriend" parameterClass="UserFriend">
+        <![CDATA[
+            DELETE FROM $tableName$ as uf where fs = 1
+        ]]>
+        <dynamic prepend="WHERE">
+            <isEqual property="ft" compareValue="id" prepend="AND">
+				<![CDATA[
+		            ((fa = #fa# and fb = #fb#) or (fa = #fb# and fb = #fa#)) and ft = 'id'
+				]]>
+            </isEqual>
+            <isNotEqual property="ft" compareValue="id" prepend="AND">
+				<![CDATA[
+		            fa = #fa# and fb = #fb# and ft = #ft#
+				]]>
+            </isNotEqual>
+        </dynamic>
+    </delete>
+    
+    <delete id="remove_userFriend_by_map" parameterClass="map">
+        <![CDATA[
+            DELETE FROM user_friend where (fa = #userId# and fb = #friendId#) or (fb = #userId# and fa = #friendId#)
+        ]]>
+    </delete>
+    
+    <delete id="remove_userFriend_by_fa_and_fb" parameterClass="map">
+    	<![CDATA[
+            DELETE FROM user_friend where fa = #userId# or fb = #userId#
+        ]]>
+    </delete>
+    
+</sqlMap>

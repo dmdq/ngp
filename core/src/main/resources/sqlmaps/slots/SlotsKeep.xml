@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="SlotsKeepSQL">
+    
+    <typeAlias alias="SlotsKeep" type="com.ngnsoft.ngp.component.slots.model.SlotsKeep"/>
+
+    <resultMap id="rm_SlotsKeep_base" class="SlotsKeep">  
+        <result property="createTime" column="create_time"/>
+        <result property="insNumber" column="insert_number"/>
+        <result property="logNumber" column="login_number"/>
+        <result property="tomKeep" column="tomorrow_keep"/>
+        <result property="sevKeep" column="seven_keep"/>
+        <result property="fiftKeep" column="fifteen_keep"/>
+        <result property="firtKeep" column="firty_keep"/>
+    </resultMap>
+    
+    <select id="find_slotsKeep_by_time" parameterClass="map" resultMap="rm_SlotsKeep_base">
+        <![CDATA[
+            SELECT * FROM slots_keep where DATE_FORMAT(create_time ,"%Y/%m/%d") between #startTime# and #endTime#
+        ]]>
+    </select>
+    
+    <select id="findSlotsKeep" parameterClass="SlotsKeep">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+    </select>
+    
+    <select id="countSlotsKeep" parameterClass="map" resultClass="long">
+        <![CDATA[
+            SELECT count(1) FROM slots_keep where DATE_FORMAT(create_time ,"%Y/%m/%d") between #startTime# and #endTime#
+        ]]>
+    </select>
+    
+    <insert id="save_slotsKeep_createTime_and_logNumber" parameterClass="map">
+        <![CDATA[
+            insert into slots_keep(login_number, create_time)  (select COUNT(DISTINCT(user_id)) as login_number, DATE_FORMAT(create_time ,"%Y/%m/%d") as create_time
+			from user_activity_history where 
+		]]>
+		<isNotEmpty property="rangeList">
+            app_id in
+            <include refid="Example_slots_In_List_Clause" />
+        </isNotEmpty>
+		<![CDATA[ 
+			AND action = 'login' 
+			AND DATE_FORMAT(create_time ,"%Y/%m/%d") = (DATE_FORMAT((select date_sub(#createTime#,interval 1 day)) ,"%Y/%m/%d")) 
+			group by DATE_FORMAT(create_time ,"%Y/%m/%d"))
+        ]]>
+    </insert>
+    
+    <update id="update_slotsKeep_insert_number" parameterClass="map">
+        <![CDATA[
+            update slots_keep a inner join (select COUNT(1) as insert_number, DATE_FORMAT(b.create_time ,"%Y/%m/%d") as create_time 
+			from slots_data b where DATE_FORMAT(b.create_time ,"%Y/%m/%d") = (DATE_FORMAT((select date_sub(#createTime#,interval 1 day)) ,"%Y/%m/%d"))
+			group by DATE_FORMAT(b.create_time ,"%Y/%m/%d"))  tem on a.create_time = tem.create_time 
+			set a.insert_number = tem.insert_number
+        ]]>
+    </update>
+    
+    <update id="update_slotsKeep_tomorrow_keep" parameterClass="map">
+        <![CDATA[
+            update slots_keep a inner join (select count(1) as count,DATE_FORMAT(u.create_time,"%Y/%m/%d") as dates from slots_data u INNER JOIN 
+			(select * from user_activity_history where 
+		]]>
+		<isNotEmpty property="rangeList">
+            app_id in
+            <include refid="Example_slots_In_List_Clause" />
+        </isNotEmpty>
+		<![CDATA[
+		 GROUP by user_id,DATE_FORMAT(create_time ,"%Y/%m/%d")) as ua 
+			on u.user_id = ua.user_id and DATE_FORMAT(ADDDATE(u.create_time, 1),"%Y/%m/%d") = DATE_FORMAT(ua.create_time ,"%Y/%m/%d") 
+			where DATE_FORMAT(u.create_time ,"%Y/%m/%d") = (DATE_FORMAT((select date_sub(#createTime#,interval 2 day)) ,"%Y/%m/%d"))
+			group by DATE_FORMAT(u.create_time,"%Y/%m/%d"))  tem on a.create_time = tem.dates
+			set a.tomorrow_keep = tem.count
+        ]]>
+    </update>
+    
+    <update id="update_slotsKeep_seven_keep" parameterClass="map">
+        <![CDATA[
+            update slots_keep a inner join (select count(1) as count,DATE_FORMAT(u.create_time,"%Y/%m/%d") as dates from slots_data u INNER JOIN 
+			(select * from user_activity_history where 
+		]]>
+		<isNotEmpty property="rangeList">
+            app_id in
+            <include refid="Example_slots_In_List_Clause" />
+        </isNotEmpty>
+		<![CDATA[ 
+		GROUP by user_id,DATE_FORMAT(create_time ,"%Y/%m/%d")) as ua 
+			on u.user_id = ua.user_id and DATE_FORMAT(ADDDATE(u.create_time, 7),"%Y/%m/%d") = DATE_FORMAT(ua.create_time ,"%Y/%m/%d") 
+			where DATE_FORMAT(u.create_time ,"%Y/%m/%d") = (DATE_FORMAT((select date_sub(#createTime#,interval 8 day)) ,"%Y/%m/%d"))
+			group by DATE_FORMAT(u.create_time,"%Y/%m/%d"))  tem on a.create_time = tem.dates
+			set a.seven_keep = tem.count
+        ]]>
+    </update>
+    
+    <update id="update_slotsKeep_fifteen_keep" parameterClass="map">
+        <![CDATA[
+            update slots_keep a inner join (select count(1) as count,DATE_FORMAT(u.create_time,"%Y/%m/%d") as dates from slots_data u INNER JOIN 
+			(select * from user_activity_history where 
+		]]>
+		<isNotEmpty property="rangeList">
+            app_id in
+            <include refid="Example_slots_In_List_Clause" />
+        </isNotEmpty>
+		<![CDATA[
+		 GROUP by user_id,DATE_FORMAT(create_time ,"%Y/%m/%d")) as ua 
+			on u.user_id = ua.user_id and DATE_FORMAT(ADDDATE(u.create_time, 15),"%Y/%m/%d") = DATE_FORMAT(ua.create_time ,"%Y/%m/%d") 
+			where DATE_FORMAT(u.create_time ,"%Y/%m/%d") = (DATE_FORMAT((select date_sub(#createTime#,interval 16 day)) ,"%Y/%m/%d"))
+			group by DATE_FORMAT(u.create_time,"%Y/%m/%d"))  tem on a.create_time = tem.dates
+			set a.fifteen_keep = tem.count
+        ]]>
+    </update>
+    
+    <update id="update_slotsKeep_firty_keep" parameterClass="map">
+        <![CDATA[
+            update slots_keep a inner join (select count(1) as count,DATE_FORMAT(u.create_time,"%Y/%m/%d") as dates from slots_data u INNER JOIN 
+			(select * from user_activity_history where 
+		]]>
+		<isNotEmpty property="rangeList">
+            app_id in
+            <include refid="Example_slots_In_List_Clause" />
+        </isNotEmpty>
+		<![CDATA[
+			 GROUP by user_id,DATE_FORMAT(create_time ,"%Y/%m/%d")) as ua 
+			on u.user_id = ua.user_id and DATE_FORMAT(ADDDATE(u.create_time, 30),"%Y/%m/%d") = DATE_FORMAT(ua.create_time ,"%Y/%m/%d") 
+			where DATE_FORMAT(u.create_time ,"%Y/%m/%d") = (DATE_FORMAT((select date_sub(#createTime#,interval 31 day)) ,"%Y/%m/%d"))
+			group by DATE_FORMAT(u.create_time,"%Y/%m/%d"))  tem on a.create_time = tem.dates
+			set a.firty_keep = tem.count 
+        ]]>
+    </update>
+    
+</sqlMap>

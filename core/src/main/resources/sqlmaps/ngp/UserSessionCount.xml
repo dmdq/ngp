@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="UserSessionCountSQL">
+    
+    <typeAlias alias="UserSessionCount" type="com.ngnsoft.ngp.model.UserSessionCount"/>
+    
+    <resultMap id="rm_UserSessionCount" class="UserSessionCount">  
+        <result property="id"/>
+        <result property="engineId" column="engine_id"/>
+        <result property="count"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+    
+    <insert id="saveUserSessionCount" parameterClass="UserSessionCount">
+        <![CDATA[
+            INSERT INTO $tableName$ (engine_id, count, create_time) 
+            VALUES (#engineId#, #count#, #createTime#)
+        ]]>
+        <selectKey resultClass="java.lang.Long" keyProperty="id" type="post">
+            select last_insert_id();
+        </selectKey>
+    </insert>
+    
+    <sql id="whereConditionUserSessionCount">
+        <dynamic prepend="WHERE">
+            <isNotNull property="engineId" prepend="AND">
+		<![CDATA[
+                    engine_id = #engineId#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findUserSessionCount" parameterClass="UserSessionCount" resultClass="UserSessionCount">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionUserSessionCount"/>
+    </select>
+
+</sqlMap>

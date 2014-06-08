@@ -1,0 +1,174 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title></title>
+<link rel="stylesheet"
+	href="<c:url value='/css/jquery/treeview/jquery.treeview.css'></c:url>" />
+<link rel="stylesheet"
+	href="<c:url value='/css/jquery/treeview/screen.css'></c:url>" />
+
+<script src="<c:url value='/js/jquery/jquery-1.4.2.js'></c:url>"
+	type="text/javascript"></script>
+<script
+	src="<c:url value='/js/jquery/external/jquery.cookie.js'></c:url>"
+	type="text/javascript"></script>
+<script
+	src="<c:url value='/js/jquery/treeview/jquery.treeview.js'></c:url>"
+	type="text/javascript"></script>
+<script
+	src="<c:url value='/js/jquery/treeview/jquery.treeview.async.js'></c:url>"
+	type="text/javascript"></script>
+
+<script type="text/javascript">
+	/**
+	 * 页面初始化
+	 * autor : wangnan
+	 * create on : 2010-03-26
+	 */
+	$(function() {
+		$("#browser").treeview( {
+			collapsed : true,
+			control : "#sidetreecontrol",
+			animated : "fast"
+		});
+
+	});
+</script>
+</head>
+
+<body>
+<div id="main">
+<div id="sidetreecontrol" align="left"><font size="2"> <a
+	href="?#">全部收缩</a> | <a href="?#">全部展开</a> </font></div>
+<br>
+<img alt="" src="<c:url value='/images/system.gif'></c:url>">&nbsp;
+<select id="roleId" name="roleId">
+	<c:forEach items="${sessionScope.user.roles}" var="role">
+		<c:choose>
+			<c:when
+				test="${role.value.roleId == sessionScope.user.defaultRoleId}">
+				<option value="${role.value.roleId }" selected="selected">${role.value.roleName
+				}</option>
+			</c:when>
+			<c:otherwise>
+				<option value="${role.value.roleId }">${role.value.roleName
+				}</option>
+			</c:otherwise>
+		</c:choose>
+	</c:forEach>
+</select>
+<ul id="browser" class="filetree">
+	<li><span class="folder">视频管理</span>
+	<ul>
+		<li><span class="file">
+		<a href="<c:url value="/web/video" />"  target="mainFrame" >视频管理</a></span></li>
+	</ul>
+	</li>
+	<li><span class="folder">歌曲管理</span>
+	<ul>
+		<li><span class="file">
+		<a href="<c:url value="/web/song" />"  target="mainFrame" >歌曲管理</a>
+		</span></li>
+		<li><span class="file">
+		<a href="<c:url value="/web/hotSong/type" />"  target="mainFrame" >热门歌曲管理</a>
+		</span></li>
+		<li><span class="file">
+		<a href="<c:url value="/web/songBak" />"  target="mainFrame" >曲库备份管理</a>
+		</span></li>
+		<li><span class="file">
+		<a href="<c:url value="/web/song/repository" />"  target="mainFrame" >曲库管理</a>
+		</span></li>
+	</ul>
+	</li>
+	<li><span class="folder">图片管理</span>
+	<ul>
+		<li><span class="file">
+		<a href="<c:url value="/web/photo/bg" />"  target="mainFrame" >背景管理</a>
+		</span></li>
+		<li><span class="file">
+		<a href="<c:url value="/web/photo/wp" />"  target="mainFrame" >壁纸管理</a>
+		</span></li>
+		<li><span class="file">
+		<a href="<c:url value="/web/photo/rd" />"  target="mainFrame" >随机图片管理</a>
+		</span></li>
+		<li><span class="file">
+		<a href="<c:url value="/web/photo/wp/suite" />"  target="mainFrame" >壁纸套图管理</a>
+		</span></li>
+		<li><span class="file">
+		<a href="<c:url value="/web/photo/wp/suite/online" />"  target="mainFrame" >壁纸套图在线管理</a>
+		</span></li>
+	</ul>
+	</li>
+	<li><span class="folder">歌手管理</span>
+	<ul>
+		<li><span class="file">
+		<a href="<c:url value="/web/singer" />"  target="mainFrame" >歌手管理</a>
+		</span></li>
+	</ul>
+	</li>
+	<li><span class="folder">供应商管理</span>
+	<ul>
+		<li><span class="file">
+		<a href="<c:url value="/web/supplier" />"  target="mainFrame" >供应商管理</a> 
+		</span></li>
+	</ul>
+	</li>
+	<li><span class="folder">参数管理</span>
+	<ul>
+		<li><span class="file">
+		<a href="<c:url value="/web/param/videoType" />"  target="mainFrame" >视频类型</a> 
+		</span></li>
+		<li><span class="file">
+			<a href="<c:url value="/web/param/photoSpec" />"  target="mainFrame" >图片规格</a> 
+			</span>
+		</li>
+		<li><span class="file">
+			<a href="<c:url value="/web/configNo" />"  target="mainFrame" >资源配置顺序号</a> 
+			</span>
+		</li>
+	</ul>
+	</li>
+	<li><span class="folder">批量管理</span>
+	<ul>
+		<li><span class="file">
+			<a href="<c:url value="/web/batch/video" />"  target="mainFrame" >视频批量</a> 
+			</span>
+		</li>
+		<li><span class="file">
+			<a href="<c:url value="/web/batch/song" />"  target="mainFrame" >歌曲批量</a> 
+			</span>
+		</li>
+		<li><span class="file">
+		<a href="<c:url value="/web/batch/bg" />"  target="mainFrame" >背景图片批量</a> 
+		</span>
+		</li>
+		<li><span class="file">
+			<a href="<c:url value="/web/batch/wp" />"  target="mainFrame" >壁纸图片批量</a> 
+			</span>
+		</li>
+		<li><span class="file">
+			<a href="<c:url value="/web/batch/wpSuite" />"  target="mainFrame" >壁纸套图批量</a> 
+			</span>
+		</li>
+		<li><span class="file">
+			<a href="<c:url value="/web/batch/rd" />"  target="mainFrame" >随机图片批量</a> 
+			</span>
+		</li>
+	</ul>
+	</li>
+	<li><span class="folder">关键字管理</span>
+	<ul>
+		<li><span class="file">
+			<a href="<c:url value="/web/wordFilter" />"  target="mainFrame" >关键字管理</a> 
+			</span>
+		</li>
+	</ul>
+	</li>
+</ul>
+</div>
+</body>
+</html>

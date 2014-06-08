@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ResUpdateSQL">
+    
+    <typeAlias alias="ResUpdate" type="com.ngnsoft.ngp.model.ResUpdate"/>
+    
+    <resultMap id="rm_ResUpdate" class="ResUpdate">
+        <result property="id"/>
+        <result property="appId" column="app_id"/>
+        <result property="oldVersion" column="old_version"/>
+        <result property="newVersion" column="new_version"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    
+    <insert id="saveResUpdate" parameterClass="ResUpdate">
+        <![CDATA[
+            INSERT INTO $tableName$ (app_id, old_version, new_version, create_time, update_time) 
+            VALUES (#appId#, #oldVersion#, #newVersion#, #createTime#, #updateTime#)
+        ]]>
+        <selectKey keyProperty="id" resultClass="long">  
+      		SELECT @@IDENTITY AS ID
+   		</selectKey>
+    </insert>
+    
+    <sql id="whereConditionResUpdate">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="appId" prepend="AND">
+		<![CDATA[
+                    app_id like '%$appId$%'
+		]]>
+            </isNotNull>
+            <isNotNull property="oldVersion" prepend="AND">
+		<![CDATA[
+                    old_version = #oldVersion#
+		]]>
+            </isNotNull>
+            <isNotNull property="newVersion" prepend="AND">
+		<![CDATA[
+                    new_version = #newVersion#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findResUpdate" parameterClass="ResUpdate" resultMap="rm_ResUpdate">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionResUpdate"/>
+    </select>
+    
+    <select id="find_res_update_by_version" parameterClass="ResUpdate" resultMap="rm_ResUpdate">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <dynamic prepend="WHERE">
+            <isNotNull property="appId" prepend="AND">
+		<![CDATA[
+                    app_id = #appId#
+		]]>
+            </isNotNull>
+            <isNotNull property="oldVersion" prepend="AND">
+		<![CDATA[
+                    old_version >= #oldVersion#
+		]]>
+            </isNotNull>
+        </dynamic>
+        order by old_version
+    </select>
+    
+    <select id="countResUpdate" resultClass="long" parameterClass="ResUpdate">
+  		<![CDATA[
+            SELECT count(*) FROM $tableName$
+        ]]>
+        <include refid="whereConditionResUpdate"/>
+  	</select>
+	
+	<update id="updateResUpdate" parameterClass="ResUpdate">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="updateTime">
+		<![CDATA[
+                    update_time = #updateTime#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where id = #id#
+    </update>
+	
+	<delete id="removeResUpdate" parameterClass="ResUpdate">
+        <![CDATA[
+            DELETE FROM $tableName$
+        ]]>
+        <include refid="whereConditionResUpdate"/>
+    </delete>
+	
+</sqlMap>

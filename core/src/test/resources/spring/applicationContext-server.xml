@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-3.2.xsd
+            http://www.springframework.org/schema/tx 
+    		http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+            http://www.springframework.org/schema/task
+            http://www.springframework.org/schema/task/spring-task-3.2.xsd"
+       default-lazy-init="true">
+    
+    <!-- Activates scanning of @Repository -->
+    <context:component-scan base-package="com.ngnsoft.ngp.dao"/>
+    
+    <!-- Activates scanning of @Service -->
+    <context:component-scan base-package="com.ngnsoft.ngp.service"/>
+    
+    <context:component-scan base-package="com.ngnsoft.ngp.component"/>
+    
+    <context:property-placeholder location="classpath:jdbc.properties,classpath:engine.properties,classpath:redis.properties,classpath:mail.properties" />
+    
+    <bean id="ngpDataSource" class="org.logicalcobwebs.proxool.ProxoolDataSource">
+		<property name="driver" value="${jdbc.driverClassName}" />
+		<property name="driverUrl" value="${ngp.jdbc.url}" />
+   		<property name="user" value="${ngp.jdbc.username}" />
+   		<property name="password" value="${ngp.jdbc.password}" />
+   		<property name="alias" value="${ngp.datasource.proxool.alias}" />
+		<property name="prototypeCount" value="${ngp.datasource.proxool.prototypeCount}" />
+		<property name="maximumConnectionCount" value="${ngp.datasource.proxool.maximumConnectionCount}" />
+		<property name="minimumConnectionCount" value="${ngp.datasource.proxool.minimumConnectionCount}" />
+                
+                <property name="maximumActiveTime" value="${datasource.proxool.maximumActiveTime}" />
+<!--                <property name="houseKeepingSleepTime" value="${datasource.proxool.houseKeepingSleepTime}" />-->
+		<property name="houseKeepingTestSql" value="${datasource.proxool.houseKeepingTestSql}" />
+		<property name="testAfterUse" value="${datasource.proxool.testAfterUse}" />
+		<property name="testBeforeUse" value="${datasource.proxool.testBeforeUse}" />
+		<property name="trace" value="${datasource.proxool.trace}"/>
+		<property name="verbose" value="${datasource.proxool.verbose}" />
+	</bean>
+    
+    <bean id="ngpSqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation" value="classpath:/sql-ngp-config.xml"/>
+        <property name="dataSource" ref="ngpDataSource"/>
+        <property name="lobHandler" ref="lobHandler"/>
+    </bean>
+    
+    <bean id="sqlMapClients" class="java.util.HashMap">  
+        <constructor-arg>  
+            <map>  
+                <entry key="ngp">
+                    <ref bean="ngpSqlMapClient" />
+                </entry>
+                <entry key="coc">
+                    <map>
+                    	<entry key="update">
+		                    <ref bean="cocUpdateSqlMapClient" />
+		                </entry>
+		                <entry key="select">
+		                    <ref bean="cocSelectSqlMapClient" />
+		                </entry>
+                    </map>
+                </entry>
+                <entry key="dragon">
+                    <ref bean="dragonSqlMapClient" />
+                </entry>
+                <entry key="candy">
+                    <ref bean="candySqlMapClient" />
+                </entry>
+                <entry key="slots">
+                    <ref bean="slotsSqlMapClient" />
+                </entry>
+            </map>
+        </constructor-arg>  
+    </bean>
+
+    <!-- Transaction manager for a single JDBC DataSource -->
+    <bean id="ngpTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="ngpDataSource"/>
+    </bean>
+    
+    <!-- 通过注解声明事务 -->
+    <tx:annotation-driven transaction-manager="ngpTransactionManager"/>
+    
+    <task:scheduler id="quartzScheduler" pool-size="10"/>
+    
+    <task:scheduled-tasks scheduler="quartzScheduler">
+    	<task:scheduled ref="userDataJob" method="unlockUserData" cron="0 0/2 * * * ?" />
+    	<task:scheduled ref="dragonDataJob" method="clearFacData" cron="0 59 23 * * ?" />
+        <task:scheduled ref="engineHealthJob" method="execute" cron="0 0/2 * * * ?" />
+        <task:scheduled ref="engineMonitorJob" method="execute" cron="0 0/5 * * * ?" />
+        <task:scheduled ref="userSessionJob" method="execute" cron="0 0/5 * * * ?" />
+    </task:scheduled-tasks>
+    
+</beans>

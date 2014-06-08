@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="UserAccountSQL">
+    
+    <typeAlias alias="UserAccount" type="com.ngnsoft.ngp.model.UserAccount"/>
+    
+    <resultMap id="rm_UserAccount" class="UserAccount">
+        <result property="userId" column="user_id"/>
+        <result property="coin"/>
+        <result property="coinReset" column="coin_reset"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    
+    <insert id="saveUserAccount" parameterClass="UserAccount">
+        <![CDATA[
+            INSERT INTO $tableName$ (user_id, coin, coin_reset, update_time) 
+            VALUES (#userId#, #coin#, #coinReset#, #updateTime#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionUserAccount">
+        <dynamic prepend="WHERE">
+            <isNotNull property="userId" prepend="AND">
+		<![CDATA[
+                    user_id = #userId#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findUserAccount" parameterClass="UserAccount" resultMap="rm_UserAccount">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionUserAccount"/>
+    </select>
+    
+    <update id="updateUserAccount" parameterClass="UserAccount">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="coin" prepend=",">
+		<![CDATA[
+                    coin = #coin#
+		]]>
+            </isNotNull>
+            <isNotNull property="coinReset" prepend=",">
+		<![CDATA[
+                    coin_reset = #coinReset#
+		]]>
+            </isNotNull>
+            <isNotNull property="updateTime" prepend=",">
+		<![CDATA[
+                    update_time = #updateTime#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where user_id = #userId#
+    </update>
+
+</sqlMap>

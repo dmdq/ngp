@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="SnsDataSQL">
+    
+    <typeAlias alias="SnsData" type="com.ngnsoft.ngp.model.SnsData"/>
+    
+    <resultMap id="rm_SnsData" class="SnsData">
+        <result property="id"/>
+        <result property="userKey" column="user_key"/>
+        <result property="keyType" column="key_type"/>
+        <result property="snsJson" column="sns_json"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    
+    <insert id="saveSnsData" parameterClass="SnsData">
+        <![CDATA[
+            INSERT INTO $tableName$ (user_key, key_type, sns_json, create_time, update_time) 
+            VALUES (#userKey#, #keyType#, #snsJson#, #createTime#, #updateTime#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionSnsData">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="userKey" prepend="AND">
+		<![CDATA[
+                    user_key = #userKey#
+		]]>
+            </isNotNull>
+            <isNotNull property="keyType" prepend="AND">
+		<![CDATA[
+                    key_type = #keyType#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findSnsData" parameterClass="SnsData" resultMap="rm_SnsData">
+        <![CDATA[   
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionSnsData"/>
+    </select>
+    
+    <update id="updateSnsData" parameterClass="SnsData">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="userKey" prepend="AND">
+		<![CDATA[
+                    user_key = #userKey#
+		]]>
+            </isNotNull>
+            <isNotNull property="keyType" prepend="AND">
+		<![CDATA[
+                    key_type = #keyType#
+		]]>
+            </isNotNull>
+            <isNotNull property="snsJson" prepend="AND">
+		<![CDATA[
+                    sns_json = #snsJson#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where id = #id#
+    </update>
+
+</sqlMap>

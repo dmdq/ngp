@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="DeviceSQL">
+    
+    <typeAlias alias="Device" type="com.ngnsoft.ngp.model.Device"/>
+    
+    <resultMap id="rm_Device" class="Device">  
+        <result property="id" column="id"/>
+        <result property="mac" column="mac"/>
+        <result property="brand" column="brand"/>
+        <result property="model" column="model"/>
+        <result property="os" column="os"/>
+        <result property="macId" column="mac_id"/>
+        <result property="udid" column="udid"/>
+        <result property="openUdid" column="open_udid"/>
+        <result property="idfa" column="idfa"/>
+        <result property="jsonAll" column="json_all"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    
+    <insert id="saveDevice" parameterClass="Device">
+        <![CDATA[
+            INSERT INTO $tableName$ (id, mac, brand, model, os, mac_id, udid, open_udid, idfa, json_all, create_time, update_time) 
+            VALUES (#id#, #mac#, #brand#, #model#, #os#, #macId#, #udid#, #openUdid#, #idfa#, #jsonAll#, #createTime#, #updateTime#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionDevice">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="mac" prepend="AND">
+		<![CDATA[
+                    mac = #mac#
+		]]>
+            </isNotNull>
+            <isNotNull property="brand" prepend="AND">
+		<![CDATA[
+                    brand = #brand#
+		]]>
+            </isNotNull>
+            <isNotNull property="model" prepend="AND">
+		<![CDATA[
+                    model = #model#
+		]]>
+            </isNotNull>
+            <isNotNull property="os" prepend="AND">
+		<![CDATA[
+                    os = #os#
+		]]>
+            </isNotNull>
+            <isNotNull property="udid" prepend="AND">
+		<![CDATA[
+                    udid = #udid#
+		]]>
+            </isNotNull>
+            <isNotNull property="macId" prepend="AND">
+		<![CDATA[
+                    mac_id = #macId#
+		]]>
+            </isNotNull>
+            <isNotNull property="openUdid" prepend="AND">
+		<![CDATA[
+                    open_udid = #openUdid#
+		]]>
+            </isNotNull>
+            <isNotNull property="idfa" prepend="AND">
+		<![CDATA[
+                    idfa = #idfa#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findDevice" parameterClass="Device" resultMap="rm_Device">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionDevice"/>
+    </select>
+    
+    <select id="find_device_by_or" parameterClass="Device" resultMap="rm_Device">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+                <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="OR">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="macId" prepend="OR">
+		<![CDATA[
+                    mac_id = #macId#
+		]]>
+            </isNotNull>
+            <isNotNull property="udid" prepend="OR">
+		<![CDATA[
+                    udid = #udid#
+		]]>
+            </isNotNull>
+            <isNotNull property="openUdid" prepend="OR">
+		<![CDATA[
+                    open_udid = #openUdid#
+		]]>
+            </isNotNull>
+            <isNotNull property="idfa" prepend="OR">
+		<![CDATA[
+                    idfa = #idfa#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </select>
+    
+    <select id="countDevice" resultClass="long" parameterClass="Device">
+  		<![CDATA[
+            SELECT count(*) FROM $tableName$
+        ]]>
+        <include refid="whereConditionDevice"/>
+  	</select>
+    
+    <delete id="removeDevice" parameterClass="Device">
+        <![CDATA[
+            DELETE FROM $tableName$
+        ]]>
+        <include refid="whereConditionDevice"/>
+    </delete>
+    
+    <update id="updateDevice" parameterClass="Device">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="mac" prepend=",">
+		<![CDATA[
+                    mac = #mac#
+		]]>
+            </isNotNull>
+            <isNotNull property="brand" prepend=",">
+		<![CDATA[
+                    brand = #brand#
+		]]>
+            </isNotNull>
+            <isNotNull property="model" prepend=",">
+		<![CDATA[
+                    model = #model#
+		]]>
+            </isNotNull>
+            <isNotNull property="os" prepend=",">
+		<![CDATA[
+                    os = #os#
+		]]>
+            </isNotNull>
+            <isNotNull property="macId" prepend=",">
+		<![CDATA[
+                    mac_id = #macId#
+		]]>
+            </isNotNull>
+            <isNotNull property="udid" prepend=",">
+		<![CDATA[
+                    udid = #udid#
+		]]>
+            </isNotNull>
+            <isNotNull property="openUdid" prepend=",">
+		<![CDATA[
+                    open_udid = #openUdid#
+		]]>
+            </isNotNull>
+            <isNotNull property="idfa" prepend=",">
+		<![CDATA[
+                    idfa = #idfa#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where id = #id#
+    </update>
+    
+    <update id="update_device_for_updv" parameterClass="Device">
+        <![CDATA[
+            UPDATE device
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="mac" prepend=",">
+		<![CDATA[
+                    mac = #mac#
+		]]>
+            </isNotNull>
+            <isNotNull property="brand" prepend=",">
+		<![CDATA[
+                    brand = #brand#
+		]]>
+            </isNotNull>
+            <isNotNull property="model" prepend=",">
+		<![CDATA[
+                    model = #model#
+		]]>
+            </isNotNull>
+            <isNotNull property="os" prepend=",">
+		<![CDATA[
+                    os = #os#
+		]]>
+            </isNotNull>
+            <isNotNull property="macId" prepend=",">
+		<![CDATA[
+                    mac_id = #macId#
+		]]>
+            </isNotNull>
+            <isNotNull property="udid" prepend=",">
+		<![CDATA[
+                    udid = #udid#
+		]]>
+            </isNotNull>
+            <isNotNull property="openUdid" prepend=",">
+		<![CDATA[
+                    open_udid = #openUdid#
+		]]>
+            </isNotNull>
+            <isNotNull property="idfa" prepend=",">
+		<![CDATA[
+                    idfa = #idfa#
+		]]>
+            </isNotNull>
+        </dynamic>
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="OR">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="macId" prepend="OR">
+		<![CDATA[
+                    mac_id = #macId#
+		]]>
+            </isNotNull>
+            <isNotNull property="udid" prepend="OR">
+		<![CDATA[
+                    udid = #udid#
+		]]>
+            </isNotNull>
+            <isNotNull property="openUdid" prepend="OR">
+		<![CDATA[
+                    open_udid = #openUdid#
+		]]>
+            </isNotNull>
+            <isNotNull property="idfa" prepend="OR">
+		<![CDATA[
+                    idfa = #idfa#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </update>
+
+</sqlMap>

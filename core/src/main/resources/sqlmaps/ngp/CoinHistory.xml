@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="CoinHistorySQL">
+    
+    <typeAlias alias="CoinHistory" type="com.ngnsoft.ngp.model.CoinHistory"/>
+    
+    <resultMap id="rm_CoinHistory" class="CoinHistory">
+        <result property="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="appId" column="app_id"/>
+        <result property="incrmt"/>
+        <result property="incrmtKey" column="incrmt_key"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+    
+    <insert id="saveCoinHistory" parameterClass="CoinHistory">
+        <![CDATA[
+            INSERT INTO $tableName$ (user_id, app_id, incrmt, incrmt_key, create_time) 
+            VALUES (#userId#, #appId#, #incrmt#, #incrmtKey#, #createTime#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionCoinHistory">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="userId" prepend="AND">
+		<![CDATA[
+                    user_id = #userId#
+		]]>
+            </isNotNull>
+            <isNotNull property="appId" prepend="AND">
+		<![CDATA[
+                    app_id = #appId#
+		]]>
+            </isNotNull>
+            <isNotNull property="incrmtKey" prepend="AND">
+		<![CDATA[
+                    incrmt_key = #incrmtKey#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findCoinHistory" parameterClass="CoinHistory" resultMap="rm_CoinHistory">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionCoinHistory"/>
+    </select>
+
+</sqlMap>

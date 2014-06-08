@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ProductSQL">
+    
+    <typeAlias alias="Product" type="com.ngnsoft.ngp.model.Product"/>
+    
+    <resultMap id="rm_Product" class="Product">
+        <result property="productId" column="product_id"/>
+        <result property="quantity" column="quantity"/>
+        <result property="amount" column="amount"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <result property="picture" column="picture"/>
+    </resultMap>
+    
+    <insert id="saveProduct" parameterClass="Product">
+        <![CDATA[
+            INSERT INTO $tableName$ (product_id, quantity, amount, name, description, picture) 
+            VALUES (#productId#, #quantity#, #amount#, #name#, #description#, #picture#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionProduct">
+        <dynamic prepend="WHERE">
+         	<isNotNull property="productId" prepend="AND">
+		<![CDATA[
+                    product_id = #productId#
+		]]>
+            </isNotNull>
+            <isNotNull property="quantity" prepend="AND">
+		<![CDATA[
+                    quantity = #quantity#
+		]]>
+            </isNotNull>
+            <isNotNull property="amount" prepend="AND">
+		<![CDATA[
+                    amount = #amount#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findProduct" parameterClass="Product" resultMap="rm_Product">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionProduct"/>
+    </select>
+    
+    <select id="countProduct" parameterClass="Product" resultClass="long">
+        <![CDATA[
+            SELECT count(1) FROM $tableName$
+        ]]>
+        <include refid="whereConditionProduct"/>
+    </select>
+    
+    <update id="updateProduct" parameterClass="Product">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="productId" prepend=",">
+		<![CDATA[
+                    product_id = #productId#
+		]]>
+            </isNotNull>
+            <isNotNull property="quantity" prepend=",">
+		<![CDATA[
+                    quantity = #quantity#
+		]]>
+            </isNotNull>
+            <isNotNull property="amount" prepend=",">
+		<![CDATA[
+                    amount = #amount#
+		]]>
+            </isNotNull>
+            <isNotNull property="description" prepend=",">
+		<![CDATA[
+                    description = #description#
+		]]>
+            </isNotNull>
+            <isNotNull property="picture" prepend=",">
+		<![CDATA[
+                    picture = #picture#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where product_id = #productId#
+    </update>
+    
+</sqlMap>

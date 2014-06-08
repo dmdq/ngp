@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="UserDataSQL">
+    
+    <typeAlias alias="UserData" type="com.ngnsoft.ngp.component.coc.model.UserData"/>
+    <typeAlias alias="UserDataShow" type="com.ngnsoft.ngp.component.coc.model.UserDataShow"/>
+    <typeAlias alias="FriendInfo" type="com.ngnsoft.ngp.model.show.FriendInfo"/>
+    <typeAlias alias="Comrade" type="com.ngnsoft.ngp.model.show.Comrade"/>
+    
+    <resultMap id="rm_userDataStatus" class="UserData">
+    	<result property="userId" column="user_id"/>
+        <result property="status" column="status"/>
+        <result property="statusDetail" column="status_detail"/>
+        <result property="searchLock" column="search_lock"/>
+    </resultMap>
+    
+    <resultMap id="rm_UserData" class="UserData">
+    	<result property="userId" column="user_id"/>
+        <result property="nick" column="nick"/>
+        <result property="ulld" column="ulld"/>
+        <result property="avatar" column="avatar_urn"/>
+        <result property="trophy" column="trophy"/>
+        <result property="status" column="status"/>
+        <result property="coin" column="coin"/>
+        <result property="level" column="level"/>
+        <result property="gem" column="gem"/>
+        <result property="townLevel" column="town_level"/>
+        <result property="statusDetail" column="status_detail"/>
+        <result property="searchLock" column="search_lock"/>
+        <result property="shieldTime" column="shield_time"/>
+        <result property="touchTime" column="touch_time"/>
+        <result property="actionTime" column="action_time"/>
+        <result property="lockTime" column="lock_time"/>
+        <result property="jsonData" column="json_data"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    
+    <resultMap id="rm_FriendInfo" class="FriendInfo">
+        <result property="userKey"/>
+    </resultMap>
+    
+    <resultMap id="rm_Comrade" class="Comrade">
+        <result property="userId" column="user_id"/>
+        <result property="jsonData" column="json_data"/>
+        <result property="isFrd" column="isFrd"/>
+        <result property="level" column="level"/>
+        <result property="actionTime" column="action_time"/>
+    </resultMap>
+    
+    <resultMap id="rm_UserDataShow" class="UserDataShow" extends="rm_UserData">  
+    </resultMap>
+
+    <insert id="saveUserData" parameterClass="UserData">
+        <![CDATA[
+            INSERT INTO $tableName$ (user_id, nick, ulld, avatar_urn, status, status_detail, trophy, gem, coin, level, town_level, json_data, search_lock, shield_time, lock_time, touch_time, action_time, create_time, update_time) 
+            VALUES (#userId#, #nick#, #ulld#, #avatar#, #status#, #statusDetail#, #trophy#, #gem#, #coin#, #level#, #townLevel#, #jsonData#, #searchLock#, #shieldTime#, #lockTime#, #touchTime#, #actionTime#, #createTime#, #updateTime#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionUserData">
+        <dynamic prepend="WHERE">
+            <isNotNull property="userId" prepend="AND">
+		<![CDATA[
+                    user_id = #userId#
+		]]>
+            </isNotNull>
+            <isNotNull property="nick" prepend="AND">
+		<![CDATA[
+                    nick = #nick#
+		]]>
+            </isNotNull>
+            <isNotNull property="trophy" prepend="AND">
+		<![CDATA[
+                    trophy = #trophy#
+		]]>
+            </isNotNull>
+            <isNotNull property="level" prepend="AND">
+		<![CDATA[
+                    level = #level#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <sql id="Example_coc_In_List_Clause" >
+            <iterate property="rangeList" open="(" close=")" conjunction=",">
+    		#rangeList[]#
+            </iterate>
+    </sql>
+    
+    <select id="findUserData" parameterClass="UserData" resultMap="rm_UserData">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionUserData"/>
+    </select>
+    
+    <select id="find_coc_uad_status" parameterClass="UserData" resultMap="rm_userDataStatus">
+        <![CDATA[
+            SELECT user_id, status, status_detail, search_lock FROM $tableName$ where user_id = #userId#
+        ]]>
+    </select>
+    
+    <select id="countUserData" parameterClass="UserData" resultClass="long">
+        <![CDATA[
+            SELECT count(1) FROM $tableName$
+        ]]>
+        <include refid="whereConditionUserData"/>
+    </select>
+    
+    <select id="find_userData_by_userId_trophy_nick_level" parameterClass="UserDataShow" resultMap="rm_UserDataShow">
+    	<![CDATA[
+            SELECT * FROM user_data
+        ]]>
+        <include refid="whereConditionUserData"/>
+    </select>
+    
+    <select id="count_userData_by_userId_trophy_nick_level" parameterClass="UserDataShow" resultClass="long">
+        <![CDATA[
+            SELECT count(*) FROM user_data
+        ]]>
+        <include refid="whereConditionUserData"/>
+    </select>
+    
+    <select id="find_local_friends_with_coc_info_by_map" parameterClass="map" resultMap="rm_FriendInfo">
+        <![CDATA[
+            SELECT a.user_id as userKey FROM user_friend uf
+        ]]>
+        <isEqual property="confirm" compareValue="1">
+        	inner join coc.user_data a on (a.user_id = uf.fa or a.user_id = uf.fb)
+			where uf.fs = #confirm# and (fa = #userId# or fb = #userId#) and a.user_id != #userId#
+        </isEqual>
+        <isEqual property="confirm" compareValue="0">
+        	inner join coc.user_data a on (a.user_id = uf.fa)
+			where uf.fs = #confirm# and (fb = #userId#) and a.user_id != #userId#
+        </isEqual>
+    </select>
+    
+    <select id="count_local_friends_with_coc_info_by_map" parameterClass="map" resultClass="long">
+        <![CDATA[
+            SELECT count(*) FROM user_friend uf
+        ]]>
+        <isEqual property="confirm" compareValue="1">
+        	inner join coc.user_data a on (a.user_id = uf.fa or a.user_id = uf.fb)
+			where uf.fs = #confirm# and (fa = #userId# or fb = #userId#) and a.user_id != #userId#
+        </isEqual>
+        <isEqual property="confirm" compareValue="0">
+        	inner join coc.user_data a on (a.user_id = uf.fa)
+			where uf.fs = #confirm# and (fb = #userId#) and a.user_id != #userId#
+        </isEqual>
+    </select>
+    
+    <select id="count_userData_by_nick" parameterClass="UserData" resultClass="long">
+        <![CDATA[
+             SELECT COUNT(1) FROM user_data WHERE nick = NULL or nick = ''
+        ]]>
+    </select>
+    
+    <select id="find_friends_user_data_as_comrade" parameterClass="map" resultMap="rm_Comrade">
+    	<![CDATA[
+            SELECT a.user_id, a.json_data, 1 as isFrd, a.level, a.action_time FROM coc.user_data a, user_friend uf
+            where ((a.user_id = uf.fb and uf.fa = #userId#)
+             or (a.user_id = uf.fa and uf.fb = #userId#))
+             and fs = 1
+        ]]>
+    </select>
+    
+    <select id="find_risker_user_data_as_comrade" parameterClass="map" resultMap="rm_Comrade">
+    	<![CDATA[
+            SELECT a.user_id, a.json_data, 0 as isFrd, a.level, a.action_time FROM coc.user_data a
+            where 1=1
+        ]]>
+        <isNotEmpty property="rangeList" prepend="AND">
+            a.user_id not in
+            <include refid="Example_coc_In_List_Clause" />
+        </isNotEmpty>
+        limit #start#, 1
+    </select>
+    
+    <update id="updateUserData" parameterClass="UserData">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="status" prepend=",">
+		<![CDATA[
+                    status = #status#
+		]]>
+            </isNotNull>
+            <isNotNull property="statusDetail" prepend=",">
+		<![CDATA[
+                    status_detail = #statusDetail#
+		]]>
+            </isNotNull>
+            <isNotNull property="ulld" prepend=",">
+		<![CDATA[
+                    ulld = #ulld#
+		]]>
+            </isNotNull>
+            <isNotNull property="nick" prepend=",">
+		<![CDATA[
+                    nick = #nick#
+		]]>
+            </isNotNull>
+            <isNotNull property="avatar" prepend=",">
+		<![CDATA[
+                    avatar_urn = #avatar#
+		]]>
+            </isNotNull>
+            <isNotNull property="coin" prepend=",">
+		<![CDATA[
+                    coin = #coin#
+		]]>
+            </isNotNull>
+            <isNotNull property="gem" prepend=",">
+		<![CDATA[
+                    gem = #gem#
+		]]>
+            </isNotNull>
+            <isNotNull property="level" prepend=",">
+		<![CDATA[
+                    level = #level#
+		]]>
+            </isNotNull>
+            <isNotNull property="townLevel" prepend=",">
+		<![CDATA[
+                    town_level = #townLevel#
+		]]>
+            </isNotNull>
+            <isNotNull property="trophy" prepend=",">
+		<![CDATA[
+                    trophy = #trophy#
+		]]>
+            </isNotNull>
+            <isNotNull property="searchLock" prepend=",">
+		<![CDATA[
+                    search_lock = #searchLock#
+		]]>
+            </isNotNull>
+            <isNotNull property="jsonData" prepend=",">
+		<![CDATA[
+                    json_data = #jsonData#
+		]]>
+            </isNotNull>
+            <isNotNull property="shieldTime" prepend=",">
+		<![CDATA[
+                    shield_time = #shieldTime#
+		]]>
+            </isNotNull>
+            <isNotNull property="touchTime" prepend=",">
+		<![CDATA[
+                    touch_time = #touchTime#
+		]]>
+            </isNotNull>
+            <isNotNull property="actionTime" prepend=",">
+		<![CDATA[
+                    action_time = #actionTime#
+		]]>
+            </isNotNull>
+            <isNotNull property="lockTime" prepend=",">
+		<![CDATA[
+                    lock_time = #lockTime#
+		]]>
+            </isNotNull>
+            <isNotNull property="updateTime" prepend=",">
+		<![CDATA[
+                    update_time = #updateTime#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where user_id = #userId#
+    </update>
+   
+    <select id="count_target_by_user" parameterClass="map" resultClass="long">
+    	<![CDATA[
+    		select floor(rand()*count(1)) FROM user_data a WHERE
+    	]]>
+    	<isNotEmpty property="rangeList">
+            user_id not in
+            <include refid="Example_coc_In_List_Clause" />
+        </isNotEmpty>
+    	<isNotNull property="lowerLimit">
+    		<isNotNull property="upperLimit">
+    			and trophy BETWEEN #lowerLimit# and #upperLimit#
+    		</isNotNull>
+    	</isNotNull>
+    	<![CDATA[
+    		and shield_time <= #sysDate#
+    		and TIMESTAMPDIFF(minute,action_time, #sysDate#) > #timeoutInterval#
+    		and search_lock = 0
+    	]]>
+    </select>
+    
+    <select id="search_target_by_user" parameterClass="map" resultMap="rm_UserData">
+    	<![CDATA[
+    		select a.* FROM user_data a WHERE
+    	]]>
+    	<isNotEmpty property="rangeList">
+            user_id not in
+            <include refid="Example_coc_In_List_Clause" />
+        </isNotEmpty>
+    	<isNotNull property="lowerLimit">
+    		<isNotNull property="upperLimit">
+    			and trophy BETWEEN #lowerLimit# and #upperLimit#
+    		</isNotNull>
+    	</isNotNull>
+    	<![CDATA[
+    		and shield_time <= #sysDate#
+    		and TIMESTAMPDIFF(minute,action_time, #sysDate#) > #timeoutInterval#
+    		and search_lock = 0
+    	]]>
+        limit #start#, 1
+    </select>
+    
+    <select id="search_assign_target_by_user" parameterClass="map" resultMap="rm_UserData">
+    	<![CDATA[
+    		select a.* FROM user_data a WHERE
+    		user_id = #userId#
+    	]]>
+    </select>
+    
+    <select id="find_trophy_by_coc_user" parameterClass="map" resultMap="rm_UserData">
+    	<![CDATA[
+    		select * FROM user_data WHERE `level` BETWEEN 0 AND 200 AND trophy BETWEEN 0 AND 10000 AND `status` = 0  ORDER BY $type$ DESC limit #count#
+    	]]>
+    </select>
+    
+    <select id="findEveryDayUserCount" parameterClass="map" resultClass="java.util.HashMap">
+    	select COUNT(1) as count, DATE_FORMAT(create_time ,"%Y-%m-%d") as dates from user_data 
+    	where DATE_FORMAT(create_time ,"%Y/%m/%d") between #startTime# and #endTime# 
+    	group by DATE_FORMAT(create_time ,"%Y/%m/%d")
+    </select>
+    
+    <select id="findUserCountByRate" parameterClass="map" resultClass="java.util.HashMap">
+    	select COUNT(1) as count, level from user_data 
+    	group by level
+    	order by level 
+    </select>
+    
+    <update id="unlockUser" parameterClass="map">
+    	update user_data set search_lock = 0 where user_id = #attacker# or user_id = #defenser#
+    </update>
+    
+    <update id="unlockUserBySchedule" parameterClass="map">
+    	update user_data set search_lock = 0 where search_lock = 1 and TIMESTAMPDIFF(minute,lock_time, #sysDate#) > #timeoutInterval#
+    </update>
+    
+    <delete id="removeUserData" parameterClass="UserData">
+        <![CDATA[
+            DELETE FROM $tableName$
+        ]]>
+        <include refid="whereConditionUserData"/>
+    </delete>
+    
+</sqlMap>

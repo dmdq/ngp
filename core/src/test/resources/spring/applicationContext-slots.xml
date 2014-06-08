@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+            http://www.springframework.org/schema/tx
+            http://www.springframework.org/schema/tx/spring-tx-3.2.xsd"
+       default-lazy-init="true">
+
+    <bean id="APP_test" class="com.ngnsoft.ngp.component.slots.SlotsComponent"/>
+    
+    <bean id="slotsDataSource" class="org.logicalcobwebs.proxool.ProxoolDataSource">
+		<property name="driver" value="${jdbc.driverClassName}" />
+		<property name="driverUrl" value="${slots.jdbc.url}" />
+   		<property name="user" value="${slots.jdbc.username}" />
+   		<property name="password" value="${slots.jdbc.password}" />
+   		<property name="alias" value="${slots.datasource.proxool.alias}" />
+		<property name="prototypeCount" value="${slots.datasource.proxool.prototypeCount}" />
+		<property name="maximumConnectionCount" value="${slots.datasource.proxool.maximumConnectionCount}" />
+		<property name="minimumConnectionCount" value="${slots.datasource.proxool.minimumConnectionCount}" />
+                
+                <property name="maximumActiveTime" value="${datasource.proxool.maximumActiveTime}" />
+<!--                <property name="houseKeepingSleepTime" value="${datasource.proxool.houseKeepingSleepTime}" />-->
+		<property name="houseKeepingTestSql" value="${datasource.proxool.houseKeepingTestSql}" />
+		<property name="testAfterUse" value="${datasource.proxool.testAfterUse}" />
+		<property name="testBeforeUse" value="${datasource.proxool.testBeforeUse}" />
+		<property name="trace" value="${datasource.proxool.trace}"/>
+		<property name="verbose" value="${datasource.proxool.verbose}" />
+	</bean>
+    
+    <bean id="slotsSqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocations">
+        	<list>
+        		<value>classpath:/sql-ngp-config.xml</value>
+        		<value>classpath:/sql-slots-config.xml</value>
+        	</list>
+        </property>
+        <property name="dataSource" ref="slotsDataSource"/>
+        <property name="lobHandler" ref="lobHandler"/>
+    </bean>
+    
+    <bean id="slotsTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="slotsDataSource"/>
+    </bean>
+    
+    <tx:annotation-driven transaction-manager="slotsTransactionManager"/>
+
+</beans>

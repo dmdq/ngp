@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="EventSQL">
+    
+    <typeAlias alias="Event" type="com.ngnsoft.ngp.component.slots.model.Event"/>
+    
+    <resultMap id="rm_Event" class="Event">
+    	<result property="id" column="id"/>
+    	<result property="curType" column="cur_type"/>
+        <result property="curUnit" column="cur_unit"/>
+        <result property="nextType" column="next_type"/>
+        <result property="nextUnit" column="next_unit"/>
+        <result property="period" column="period"/>
+        <result property="bakStartTime" column="bak_start_time"/>
+        <result property="refreshStartTime" column="refresh_start_time"/>
+        <result property="curTotalHours" column="cur_total_hours"/>
+        <result property="nextTotalHours" column="next_total_hours"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="curStatus" column="cur_status"/>
+        <result property="nextStatus" column="next_status"/>
+        <result property="lastType" column="last_type"/>
+    </resultMap>
+    
+    <sql id="whereConditionEvent">
+        <dynamic prepend="WHERE">
+        	<isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="period" prepend="AND">
+		<![CDATA[
+                    period = #period#
+		]]>
+            </isNotNull>
+            <isNotNull property="curUnit" prepend="AND">
+		<![CDATA[
+                    cur_unit = #curUnit#
+		]]>
+            </isNotNull>
+            <isNotNull property="nextUnit" prepend="AND">
+		<![CDATA[
+                    next_unit = #nextUnit#
+		]]>
+            </isNotNull>
+            <isNotNull property="curTotalHours" prepend="AND">
+		<![CDATA[
+                    cur_total_hours = #curTotalHours#
+		]]>
+            </isNotNull>
+            <isNotNull property="curStatus" prepend="AND">
+		<![CDATA[
+                    cur_status = #curStatus#
+		]]>
+            </isNotNull>
+            <isNotNull property="curType" prepend="AND">
+		<![CDATA[
+                    cur_type = #curType#
+		]]>
+            </isNotNull>
+            <isNotNull property="nextType" prepend="AND">
+		<![CDATA[
+                    next_type = #nextType#
+		]]>
+            </isNotNull>
+            <isNotNull property="nextStatus" prepend="AND">
+		<![CDATA[
+                    next_status = #nextStatus#
+		]]>
+            </isNotNull>
+            <isNotNull property="nextTotalHours" prepend="AND">
+		<![CDATA[
+                    next_total_hours = #nextTotalHours#
+		]]>
+            </isNotNull>
+            <isNotNull property="lastType" prepend="AND">
+		<![CDATA[
+                    last_type = #lastType#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findEvent" parameterClass="Event" resultMap="rm_Event">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionEvent"/>
+    </select>
+    
+    <delete id="removeEvent" parameterClass="Event">
+        <![CDATA[
+            DELETE FROM $tableName$
+        ]]>
+        <include refid="whereConditionEvent"/>
+    </delete>
+    
+    <update id="updateEvent" parameterClass="Event">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+        	<isNotNull property="period" prepend=",">
+		<![CDATA[
+                    period = #period#
+		]]>
+            </isNotNull>
+            <isNotNull property="curUnit" prepend=",">
+		<![CDATA[
+                    cur_unit = #curUnit#
+		]]>
+            </isNotNull>
+            <isNotNull property="nextUnit" prepend=",">
+		<![CDATA[
+                    next_unit = #nextUnit#
+		]]>
+            </isNotNull>
+            <isNotNull property="curTotalHours" prepend=",">
+		<![CDATA[
+                    cur_total_hours = #curTotalHours#
+		]]>
+            </isNotNull>
+            <isNotNull property="nextTotalHours" prepend=",">
+		<![CDATA[
+                    next_total_hours = #nextTotalHours#
+		]]>
+            </isNotNull>
+            <isNotNull property="refreshStartTime" prepend=",">
+		<![CDATA[
+                    refresh_start_time = #refreshStartTime#
+		]]>
+            </isNotNull>
+            <isNotNull property="bakStartTime" prepend=",">
+		<![CDATA[
+                    bak_start_time = #bakStartTime#
+		]]>
+            </isNotNull>
+            <isNotNull property="curStatus" prepend=",">
+		<![CDATA[
+                    cur_status = #curStatus#
+		]]>
+            </isNotNull>
+            <isNotNull property="curType" prepend=",">
+		<![CDATA[
+                    cur_type = #curType#
+		]]>
+            </isNotNull>
+            <isNotNull property="nextType" prepend=",">
+		<![CDATA[
+                    next_type = #nextType#
+		]]>
+            </isNotNull>
+            <isNotNull property="nextStatus" prepend=",">
+		<![CDATA[
+                    next_status = #nextStatus#
+		]]>
+            </isNotNull>
+            <isNotNull property="updateTime" prepend=",">
+		<![CDATA[
+                    update_time = #updateTime#
+		]]>
+            </isNotNull>
+            <isNotNull property="lastType" prepend=",">
+		<![CDATA[
+                    last_type = #lastType#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where id = #id#
+    </update>
+    
+</sqlMap>

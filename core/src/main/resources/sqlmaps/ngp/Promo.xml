@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="PromoSQL">
+    
+    <typeAlias alias="Promo" type="com.ngnsoft.ngp.model.Promo"/>
+    
+    <resultMap id="rm_Promo" class="Promo">
+        <result property="id"/>
+        <result property="name"/>
+        <result property="link" column="link"/>
+        <result property="icon" column="icon_urn"/>
+        <result property="idx" column="idx"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    
+    <insert id="savePromo" parameterClass="Promo">
+        <![CDATA[
+            INSERT INTO $tableName$ (name, link, icon_urn, idx, create_time, update_time) 
+            VALUES (#name#, #link#, #icon#, #idx#, #createTime#, #updateTime#)
+        ]]>
+    </insert>
+    
+    <sql id="whereConditionPromo">
+        <dynamic prepend="WHERE">
+            <isNotNull property="id" prepend="AND">
+		<![CDATA[
+                    id = #id#
+		]]>
+            </isNotNull>
+            <isNotNull property="name" prepend="AND">
+		<![CDATA[
+                    name like '%$name$%'
+		]]>
+            </isNotNull>
+            <isNotNull property="idx" prepend="AND">
+		<![CDATA[
+                    idx = #idx#
+		]]>
+            </isNotNull>
+        </dynamic>
+    </sql>
+    
+    <select id="findPromo" parameterClass="Promo" resultMap="rm_Promo">
+        <![CDATA[
+            SELECT * FROM $tableName$
+        ]]>
+        <include refid="whereConditionPromo"/>
+        order by idx
+    </select>
+    
+    <select id="countPromo" resultClass="long" parameterClass="Promo">
+  		<![CDATA[
+            SELECT count(*) FROM $tableName$
+        ]]>
+        <include refid="whereConditionPromo"/>
+  	</select>
+  	
+  	<update id="updatePromo" parameterClass="Promo">
+        <![CDATA[
+            UPDATE $tableName$
+        ]]>
+        <dynamic prepend="SET">
+            <isNotNull property="idx" prepend=",">
+		<![CDATA[
+                    idx = #idx#
+		]]>
+            </isNotNull>
+            <isNotNull property="name" prepend=",">
+		<![CDATA[
+                    name = #name#
+		]]>
+            </isNotNull>
+            <isNotNull property="link" prepend=",">
+		<![CDATA[
+                    link = #link#
+		]]>
+            </isNotNull>
+            <isNotNull property="icon" prepend=",">
+		<![CDATA[
+                    icon_urn = #icon#
+		]]>
+            </isNotNull>
+            <isNotNull property="updateTime" prepend=",">
+		<![CDATA[
+                    update_time = #updateTime#
+		]]>
+            </isNotNull>
+        </dynamic>
+        where id = #id#
+    </update>
+    
+</sqlMap>

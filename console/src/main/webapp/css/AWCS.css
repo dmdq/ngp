@@ -1,0 +1,106 @@
+@charset "utf-8";
+body  {
+	font-family:  Verdana, Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	color: #000000;
+	font-weight: normal;
+	margin-left: 5px;
+	margin-top: 0px;
+	margin-right: 5px;
+	margin-bottom: 0px;
+	text-align: center;
+}
+
+table {
+	border-collapse:collapse;
+	border-right: 1px solid #4680CC;
+	margin-right: 20px;
+	margin-left: 10px;
+}
+table th{
+	color: #4680CC;
+	font-family: monospace;
+	background: #9cf;
+	text-align: left;
+	border-top: 1px solid #4680CC;
+	border-bottom: 1px solid #4680CC;
+	border-left: 1px solid #4680CC;
+	border-right: 1px solid #4680CC;
+}
+table td{
+	text-align: left;
+	border:1px solid #4680CC;
+	padding-left: 8px;
+	padding-right:8px;
+	padding-top: 4px;
+	padding-bottom: 4px;
+    border-top: 1px solid #4680CC;
+	border-left:1px solid #4680CC;
+	border-bottom: 1px solid #4680CC;
+	border-right: 1px solid #4680CC;
+}
+tr.odd {
+	background: #fff;
+}
+tr.even{
+	background: #efefef;
+}
+
+table.datagrid1{
+	width: 800px;
+	border-collapse: collapse;
+	border-bottom: 1px solid #666;
+}
+table.datagrid1 th{
+	font-size: 14px;
+	font-weight: bold;
+	color: #001212;
+	background: url(../images/bg-t.gif) repeat-x;
+	height: 31px;
+	text-indent: 11px;
+	margin-top: 1px;
+	margin-bottom: 1px;
+}
+table.datagrid1 td{
+	padding-left: 8px;
+	padding-right:8px;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	border-top: 1px solid #4680CC;
+}
+table.entity-form{
+	width: 800px;
+	border-collapse: collapse;
+	border-bottom: 1px solid #666;
+}
+table.entity-form th{
+	font: bold 14px/ 30px 宋体, sans-serif;
+	color: #ffffff;
+	text-align: right;
+	background: #9cf;
+	height: 31px;
+	text-indent: 11px;
+	padding-left: 8px;
+	padding-right:8px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+table.entity-form td{
+	padding-left: 8px;
+	padding-right:8px;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	border-top: 1px solid #4680CC;
+}
+.title-text1 {
+	font-size: 14px;
+	font-weight: bold;
+	color: #001212;
+	background-image: url(../images/bg-t.gif);
+	height: 31px;
+	text-indent: 11px;
+	margin-top: 1px;
+	margin-bottom: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+}

@@ -1,0 +1,80 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+    
+<%@include file="/jsp/head.inc" %>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title></title>
+<link href="<c:url value='/theme/css.css' />" rel="stylesheet" type="text/css" />
+
+<script type="text/javascript" src="<c:url value='/js/jquery/jquery-1.4.2.js' />"></script>
+<script type="text/javascript">
+<!--
+	function logout() {
+		document.logoutForm.submit();
+	}
+
+	function removeSession() {
+		$.ajax({
+			   type: "POST",
+			   url: "<c:url value='/removeSession.htm'></c:url>",
+			   data: "",
+			   success: function(responseText) {
+				   alert('会话已移除');
+			   }
+			});
+	}
+//-->
+</script>
+</head>
+
+<body>
+<form name="logoutForm" action="<c:url value="/web/system/logout"></c:url>" target="_top" method="post">
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="100%" height="80" align="left" background="../images/head.jpg">
+    	<table width="100%" align="center">
+    		<tr align="left">
+    			<td width="300px" align="center">
+    				<img alt="" src="../images/logo.jpg">
+    			</td>
+    			<td align="center" style="FILTER: mask(color=#a09261) shadow(color=#000000,direction=135) chroma(color=#a09261)">
+    				<FONT style="FONT-SIZE: 30pt; WIDTH: 100%; COLOR: #000000; LINE-HEIGHT: 150%; FONT-FAMILY: 黑体"><B><I>艾麒内容管理系统</I></B></FONT>
+    			</td>
+    			<td width="300px" align="center">
+    				&nbsp;
+    			</td>
+    		</tr>
+    	</table>
+    </td>
+  </tr>
+  <tr>
+    <td height="25" align="center" valign="bottom" background="../images/index_r2_c1.gif">
+	    <table width="95%" height="22" border="0" cellpadding="0" cellspacing="0">
+	      <tr>
+	        <td width="70%" class="whitetext" align="left"">
+	        	您&nbsp;&nbsp;&nbsp;&nbsp;好：${sessionScope.user.name }
+	        	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	        	用户编号：${sessionScope.user.userId }
+	        	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	        	所属部门：${sessionScope.user.departmentName }
+	        </td>
+	        <td width="30%" class="whitetext" align="right">
+	        	<a name="logout" href="javascript:logout();"><font color="white">退出系统</font></a>
+	        	<span style="display: none">
+	        		<a name="removeSession" href="javascript:removeSession();"><font color="white">移除会话</font></a>
+	        	</span>
+	        	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	        	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	        </td>
+	      </tr>
+	    </table>
+    </td>
+  </tr>
+</table>
+
+</form>
+</body>
+</html>
